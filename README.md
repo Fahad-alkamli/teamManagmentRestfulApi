@@ -3,7 +3,7 @@ My team managment restful Api
 
 Notes:
 
-1- don't forget to change the these settings in your sql server to make sure that a connection stays alive as long as possible
+1- don't forget to change these settings in your sql server to make sure that a connection stays alive as long as possible:
 
 A. nano /etc/mysql/my.cnf
 

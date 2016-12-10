@@ -13,3 +13,8 @@ The last packet successfully received from the server was 8,024,790 milliseconds
 MethodName: getUserIdFromSession || ErrorMessage: Communications link failure
 
 The last packet successfully received from the server was 9,776,282 milliseconds ago.  The last packet sent successfully to the server was 9,776,284 milliseconds ago.
+MethodName: getUserIdFromSession || ErrorMessage: Communications link failure
+
+The last packet successfully received from the server was 5,657,538 milliseconds ago.  The last packet sent successfully to the server was 5,657,544 milliseconds ago.
+MethodName: getUserIdFromSession || ErrorMessage: null
+MethodName: getUserIdFromSession || ErrorMessage: null

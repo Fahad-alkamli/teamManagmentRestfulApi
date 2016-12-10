@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 
 import entity.CommonFunctions;
+import logger.Logger;
 
 
 
@@ -13,6 +14,7 @@ import entity.CommonFunctions;
 public class DBUtility  {
 
 	// private static Connection connection = null;
+	final static Logger log=new Logger(DBUtility.class.getName());
 	 private static ArrayList<Connection> connectctionsList;
 	 private static String driver ="com.mysql.jdbc.Driver";
 	 private static String user = "root";
@@ -23,6 +25,7 @@ public class DBUtility  {
 	    {
 	            try {
 
+	            	
 	            	//reset the pointer
 	            	if(pointer==29)
 	            	{
@@ -38,6 +41,7 @@ public class DBUtility  {
 								setupConnections();
 	
 	            	}
+	            	System.out.println("Check this:"+connectctionsList.size());
 	            	if(connectctionsList.size()<29)
 	            	{
 	            		System.out.println("Give connection number: "+0);
@@ -52,25 +56,47 @@ public class DBUtility  {
 	            	}
 	            	 else if(connectctionsList.get(pointer).isClosed() || connectctionsList.get(pointer).isValid(2)==false)
 	            	{
+	            		 pointer=0;
 	            		System.out.println("Connection is broken");
-	            		//remove the broken connection and add a new one 
-	            		Class.forName(driver);
-	            		connectctionsList.remove(connectctionsList.get(pointer));
+	            		connectctionsList.clear();
 	            		connectctionsList.add(DriverManager.getConnection(url, user, password));
+						setupConnections();
+						
+	            		return connectctionsList.get(0);
 	            	}
 	            	Connection connection=connectctionsList.get(pointer);
 	            	System.out.println("Give connection number: "+pointer);
 	            	pointer++;
 	            	return connection;
 	            }catch (Exception e) {
-	            	class Local {};  CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
-	                e.printStackTrace();
-
+	        		class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+	    			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+	    	
 	            }
 	            return null;
 	    }
 	
 	    
+	    
+	    public static synchronized void fixConnections()
+	    {
+	    	
+	    	for(Connection con:connectctionsList)
+	    	{
+	    		try{
+	    		if(con.isClosed() || con.isValid(2)==false)
+	    		{
+	    			connectctionsList.remove(con);
+            		connectctionsList.add(DriverManager.getConnection(url, user, password));
+	    		}
+	    		}catch(Exception e)
+	    		{
+	    			class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+	    			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+	    	
+	    		}
+	    	}
+	    }
 
 
 	    
@@ -94,7 +120,9 @@ public class DBUtility  {
 						}		            	
 		            	 catch (Exception e) {
 								
-								e.printStackTrace();
+		            			class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+		    	    			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+		    	    	
 							}
 					}
 	    			
@@ -103,7 +131,9 @@ public class DBUtility  {
 	    	}
 	    	}catch(Exception e)
 	    	{
-	    		System.out.println(e.getMessage());
+	    		class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+    			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+    	
 	    	}
 	    }
 }

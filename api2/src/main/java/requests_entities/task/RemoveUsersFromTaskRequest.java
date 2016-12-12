@@ -45,6 +45,16 @@ public class RemoveUsersFromTaskRequest {
 		this.userId = userId;
 	}
 	
+   public RemoveUsersFromTaskRequest(String adminSession, int taskId, ArrayList<Integer> userId) {
+        this.adminSession = adminSession;
+        this.taskId = taskId;
+        this.userId = userId;
+    }
+	public RemoveUsersFromTaskRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	public String getJson(RemoveUsersFromTaskRequest request)
     {
         try{
@@ -59,16 +69,6 @@ public class RemoveUsersFromTaskRequest {
         }
         return null;
     }
-    public RemoveUsersFromTaskRequest(String adminSession, int taskId, ArrayList<Integer> userId) {
-        this.adminSession = adminSession;
-        this.taskId = taskId;
-        this.userId = userId;
-    }
-	public RemoveUsersFromTaskRequest() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
-    
+ 
     
 	}

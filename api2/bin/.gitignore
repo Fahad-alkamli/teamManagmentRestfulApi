@@ -1,1 +1,4 @@
 /db/
+/requests_entities/
+/logger/
+/controllers/

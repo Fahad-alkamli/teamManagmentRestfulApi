@@ -8,8 +8,10 @@ public class Logger {
 
 	private String className;
 	private String errorLogFilePath="error-log.txt";
+	@SuppressWarnings("unused")
 	private String infoLogFilePath="info-log.txt";
 	private String warnLogFilePath="warn-log.txt";
+	@SuppressWarnings("unused")
 	private String debugLogFilePath="debug-log.txt";
 	public Logger(String className)
 	{

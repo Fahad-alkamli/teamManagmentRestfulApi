@@ -2,8 +2,6 @@ package requests_entities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import requests_entities.task.CreateTaskRequest;
-
 public class Response {
 
 	private boolean state=false;

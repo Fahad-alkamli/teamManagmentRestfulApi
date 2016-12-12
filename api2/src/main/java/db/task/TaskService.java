@@ -210,7 +210,7 @@ public class TaskService {
 			if(UsersService.validateAdminSession(task.getSession()))
 			{
 				admin=true;
-			}else if(TaskExtra.doesTaskBelongToUser((UsersService.getUserIdFromSession(task.getSession())),(task.getTask_id()))==false)
+			}else if(TaskExtra.doesUserBelongToTask((UsersService.getUserIdFromSession(task.getSession())),(task.getTask_id()))==false)
 			{
 				return new Response(false,"User doesn't belong to this task");
 			}
@@ -306,7 +306,7 @@ public class TaskService {
 			boolean valid=false;
 			for(int userId:request.getUserId())
 			{
-				if(!TaskExtra.doesTaskBelongToUser((userId), (request.getTaskId())))
+				if(!TaskExtra.doesUserBelongToTask((userId), (request.getTaskId())))
 				{
 					continue;
 				}

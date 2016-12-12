@@ -337,8 +337,11 @@ public class UsersService {
 
 			}else{
 			
-				preparedStatement = DBUtility.getConnection()
-						.prepareStatement("select user_id,admin,user_name,user_email from user where user_id <> ? and user_id in (select user_id from project_memebers WHERE project_id in (select DISTINCT(project_id) from project_memebers where user_id=?))");
+				//preparedStatement = DBUtility.getConnection().prepareStatement("select user_id,admin,user_name,user_email from user where user_id <> ? and user_id in (select user_id from project_memebers WHERE project_id in (select DISTINCT(project_id) from project_memebers where user_id=?))");
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select user_id,admin,user_name,user_email from user where user_id <> ? and user_id"
+					+ " in (select user_id from project_memebers WHERE project_id in(select DISTINCT(project_id) from project_memebers where user_id=? and project_id "
+					+ "in(select project_id from project where project_id =project_id and enabled=true)))");
 				preparedStatement.setInt(1,(userId));
 				preparedStatement.setInt(2,(userId));
 			}

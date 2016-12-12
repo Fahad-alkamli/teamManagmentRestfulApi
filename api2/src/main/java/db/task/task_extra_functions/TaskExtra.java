@@ -18,7 +18,7 @@ import requests_entities.Response;
 
 public class TaskExtra {
 	static Logger log = new Logger(TaskExtra.class.getName());
-	public static boolean doesTaskBelongToUser(int userId,int taskId)
+	public static boolean doesUserBelongToTask(int userId,int taskId)
 	{
 		PreparedStatement preparedStatement=null;
 		try{
@@ -86,7 +86,7 @@ public class TaskExtra {
 			if(projectIds.size()<1)
 			{
 				CommonFunctions.closeConnection(preparedStatement);
-				return new Response(false,"");
+				return new Response(true,"");
 			}
 			CommonFunctions.closeConnection(preparedStatement);
 			for(int temp:projectIds)
@@ -112,6 +112,12 @@ public class TaskExtra {
 				CommonFunctions.closeConnection(preparedStatement);
 			}
 
+			if(tasks.isEmpty())
+			{
+				//The result of the query returned 0 
+				return new Response(true,"");
+			}
+			
 			//Return tasks;
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.enable(SerializationFeature.INDENT_OUTPUT);

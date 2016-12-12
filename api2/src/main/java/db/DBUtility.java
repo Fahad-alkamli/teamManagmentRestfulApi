@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
-import entity.CommonFunctions;
 import logger.Logger;
 
 
@@ -18,14 +17,15 @@ public class DBUtility  {
 	 private static ArrayList<Connection> connectctionsList;
 	 private static String driver ="com.mysql.jdbc.Driver";
 	 private static String user = "root";
-	 private static  String url = "jdbc:mysql://172.16.42.42:3306/TeamManagment?autoReconnect=true&useSSL=true";
+	// private static  String url = "jdbc:mysql://172.16.42.42:3306/TeamManagment?autoReconnect=true&useSSL=true";
+	 private static  String url = "jdbc:mysql://localhost:3306/TeamManagment?autoReconnect=true&useSSL=false";
+	   
      private static  String password ="console";
 	static int pointer=0;
 	    public static synchronized Connection getConnection() 
 	    {
 	            try {
 
-	            	
 	            	//reset the pointer
 	            	if(pointer==29)
 	            	{
@@ -35,13 +35,15 @@ public class DBUtility  {
 	            	{
 	            		System.out.println("Create the first connection");
 	            		//create the first connection and create a thread that does the rest don't forget to increase the counter
+	            		Class.forName(driver);
+						
 	            		connectctionsList=new ArrayList<Connection>();
 	            		connectctionsList.add(DriverManager.getConnection(url, user, password));
 	
 								setupConnections();
 	
 	            	}
-	            	System.out.println("Check this:"+connectctionsList.size());
+	            	//System.out.println("Check this:"+connectctionsList.size());
 	            	if(connectctionsList.size()<29)
 	            	{
 	            		System.out.println("Give connection number: "+0);

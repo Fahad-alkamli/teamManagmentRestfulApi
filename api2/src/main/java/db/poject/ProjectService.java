@@ -265,11 +265,7 @@ public class ProjectService {
 
 				return new Response(true,"");
 			}
-			//let's read them first 
-			for(Project temp2:temp)
-			{
-				//System.out.println(temp2.getJson(temp2));
-			}
+
 			CommonFunctions.closeConnection(preparedStatement);
 
 			ObjectMapper objectMapper = new ObjectMapper();

@@ -29,7 +29,7 @@ public class SendEmail {
 					.text("Your Token: "+token)
 					.build();
 
-			new Mailer("smtp.gmail.com", 25, "consolegbyte@gmail.com", "console123456", TransportStrategy.SMTP_TLS).sendMail(message,true);
+			new Mailer("smtp.gmail.com", 25, "consolegbyte@gmail.com", "password", TransportStrategy.SMTP_TLS).sendMail(message,true);
 			return new Response(true,"");
 		}catch(Exception e)
 		{

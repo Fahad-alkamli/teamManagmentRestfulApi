@@ -26,6 +26,7 @@ public class UsersService {
 	public static Response createUser(CreateUserRequest user)
 	{
 		PreparedStatement preparedStatement =null;
+		
 		try{
 			preparedStatement = DBUtility.getConnection()
 					.prepareStatement("insert into user(user_name,user_email,user_password,admin) values (?, ?, ?,?)",Statement.RETURN_GENERATED_KEYS);
@@ -322,7 +323,7 @@ public class UsersService {
 	public static ArrayList<User> getAllUsers(String session,int userId)
 	{
 		//If the user is an admin then i will fetch all the users if not then Get me users that belong to a project i am enrolled in 
-		//Furthermore, if not admin they can see only enabled projects 
+		//Furthermore, if not admin they can see only users with the enabled projects 
 		ArrayList<User> temp=new ArrayList<User>();
 		PreparedStatement preparedStatement=null;
 		try{
@@ -413,12 +414,15 @@ public class UsersService {
 		PreparedStatement preparedStatement =null;
 		try{
 			//validate the token first and return the email if the token is valid
-			Response response=validateToken(request.getToken());
+			User user=userExistsCheckByEmail(request.getEmail());
+			if(user==null )
+			{
+				return new Response(false,"Not valid email");
+			}
+			Response response=validateToken(request.getToken(),user.getId());
 			if(!response.getState())
 			{
-
 				return new Response(false,"Not valid token");
-
 			}
 			//update the password
 			preparedStatement = DBUtility.getConnection()
@@ -510,13 +514,14 @@ public class UsersService {
 	}
 
 
-	private static Response validateToken(String token)
+	private static Response validateToken(String token,int userId)
 	{
 		PreparedStatement preparedStatement =null;
 		try{
 			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from restore_password_requests where token=?");
+					.prepareStatement("select * from restore_password_requests where token=? and user_id=?");
 			preparedStatement.setString(1, token);
+			preparedStatement.setInt(2, userId);
 			ResultSet result=  preparedStatement.executeQuery();
 			if(result.next())
 			{
@@ -530,6 +535,7 @@ public class UsersService {
 				return new Response(true,user.getEmail());
 			}else{
 				CommonFunctions.closeConnection(preparedStatement);
+				increaseTokenCounter(userId);
 				return new Response(false,"");
 			}
 		}catch(Exception e)
@@ -541,6 +547,54 @@ public class UsersService {
 		}
 	}
 
+	//This will increase the counter for each token to protect the token from bruteforce attacks
+	@SuppressWarnings("resource")
+	private static void increaseTokenCounter(int userId)
+	{
+		PreparedStatement preparedStatement =null;
+		try{
+			//First we check the counter for the token if it's more than 3 tries then remove the token ,otherwise increase the token by 1
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select * from restore_password_requests where user_id=?");
+			preparedStatement.setInt(1, userId);
+			ResultSet result=preparedStatement.executeQuery();
+			if(result.next())
+			{
+				int counter=result.getInt("failed_tries_counter");
+				CommonFunctions.closeConnection(preparedStatement);
+				
+				if(counter>=3)
+				{
+					//Remove the token 
+					preparedStatement = DBUtility.getConnection()
+							.prepareStatement("delete from restore_password_requests where user_id=?");
+					preparedStatement.setInt(1, userId);
+					preparedStatement.executeUpdate();
+					CommonFunctions.closeConnection(preparedStatement);
+					return;
+				}else{
+					//Increase the token by 1
+					counter++;
+					preparedStatement = DBUtility.getConnection().prepareStatement("update restore_password_requests set failed_tries_counter=? where user_id=?");
+					preparedStatement.setInt(1, counter);
+					preparedStatement.setInt(2, userId);
+					preparedStatement.executeUpdate();
+					CommonFunctions.closeConnection(preparedStatement);
+					return;
+				}	
+			}else{
+				CommonFunctions.closeConnection(preparedStatement);
+				return;
+			}
+			
+		}catch(Exception e)
+		{
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			CommonFunctions.closeConnection(preparedStatement);
+			
+		}
+	}
 
 	private static void removeToken(String token)
 	{

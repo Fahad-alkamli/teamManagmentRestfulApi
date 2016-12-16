@@ -28,6 +28,7 @@ CREATE TABLE `project_memebers` (
 CREATE TABLE `restore_password_requests` (
   `user_id` int(11) NOT NULL,
   `token` int(11) NOT NULL,
+  `failed_tries_counter` int(11) NOT NULL,
   `expire_date` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -82,9 +83,9 @@ ALTER TABLE `user`
 ALTER TABLE `project`
   MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 ALTER TABLE `tasks`
-  MODIFY `task_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `task_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 ALTER TABLE `assign_task_to_user`
   ADD CONSTRAINT `assign_task_to_user_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
@@ -103,3 +104,6 @@ ALTER TABLE `tasks`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+INSERT INTO `user` (`user_id`, `admin`, `user_name`, `user_email`, `user_password`, `session`) VALUES (NULL, '1', 'admin', 'd0l1@hotmail.com', 'admin123456', NULL);

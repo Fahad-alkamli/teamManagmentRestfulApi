@@ -140,8 +140,8 @@ public class UserController {
 		return new ResponseEntity<String>("",HttpStatus.METHOD_NOT_ALLOWED);	
 
 	}
-	@RequestMapping(value="/change_password_by_token", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	
+	@RequestMapping(value="/change_password_by_token", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> changePasswordByToken(@Valid @RequestBody ChangePasswordRequestByToken request)
 	{
 		try{

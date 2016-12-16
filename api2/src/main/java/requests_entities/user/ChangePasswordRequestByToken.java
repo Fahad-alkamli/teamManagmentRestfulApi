@@ -9,15 +9,28 @@ import entity.CommonFunctions;
 public class ChangePasswordRequestByToken {
 
 	@NotNull
-	private	String token,password;
+	private	String token,password,email;
 
 	public ChangePasswordRequestByToken() {
 	}
 
-	public ChangePasswordRequestByToken(String token, String password) {
+	public ChangePasswordRequestByToken(String token, String password,String email) {
 		super();
 		this.token = token;
 		this.password = password;
+		this.email=email;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		if(CommonFunctions.clean(email) ==null || CommonFunctions.clean(email).length()<1 )
+		{
+			return;
+		}
+		this.email = email;
 	}
 
 	public String getToken() {

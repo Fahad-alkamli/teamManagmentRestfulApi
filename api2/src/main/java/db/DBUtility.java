@@ -17,8 +17,9 @@ public class DBUtility  {
 	 private static ArrayList<Connection> connectctionsList;
 	 private static String driver ="com.mysql.jdbc.Driver";
 	 private static String user = "root";
-	// private static  String url = "jdbc:mysql://172.16.42.42:3306/TeamManagment?autoReconnect=true&useSSL=true";
-	 private static  String url = "jdbc:mysql://localhost:3306/TeamManagment?autoReconnect=true&useSSL=false";
+	 //http://stackoverflow.com/questions/3828818/java-preparedstatement-utf-8-character-problem
+	 private static  String url = "jdbc:mysql://172.16.42.42:3306/TeamManagment?autoReconnect=true&useSSL=true&characterEncoding=UTF-8";
+	// private static  String url = "jdbc:mysql://localhost:3306/TeamManagment?autoReconnect=true&useSSL=false&characterEncoding=UTF-8";
 	   
      private static  String password ="console";
 	static int pointer=0;

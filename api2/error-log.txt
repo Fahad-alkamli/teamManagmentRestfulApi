@@ -1,0 +1,8 @@
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Could not create connection to database server. Attempted reconnect 3 times. Giving up.
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.user.UsersService || MethodName: logout || ErrorMessage: null

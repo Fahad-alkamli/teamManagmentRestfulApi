@@ -417,12 +417,12 @@ public class UsersService {
 			User user=userExistsCheckByEmail(request.getEmail());
 			if(user==null )
 			{
-				return new Response(false,"Not valid email");
+				return new Response(false,"Not a valid email");
 			}
 			Response response=validateToken(request.getToken(),user.getId());
 			if(!response.getState())
 			{
-				return new Response(false,"Not valid token");
+				return new Response(false,"Not a valid token");
 			}
 			//update the password
 			preparedStatement = DBUtility.getConnection()

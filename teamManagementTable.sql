@@ -28,7 +28,7 @@ CREATE TABLE `project_memebers` (
 CREATE TABLE `restore_password_requests` (
   `user_id` int(11) NOT NULL,
   `token` int(11) NOT NULL,
-  `failed_tries_counter` int(11) NOT NULL,
+  `failed_tries_counter` int(11) NOT NULL DEFAULT '0',
   `expire_date` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

@@ -118,13 +118,22 @@ public class UsersService {
 			preparedStatement.setString(1, email);
 			preparedStatement.setString(2, password);
 			ResultSet set= preparedStatement.executeQuery();
-			if(set.next())
+			User user=userExistsCheckByEmail(email);
+			if(user==null)
+			{
+				return false;
+			}
+			if(set.next() && UsersExtra.login_counter_state(user.getId()))
 			{
 				//System.out.println("User exists");
 				CommonFunctions.closeConnection(preparedStatement);
+				//Remove the old attempts 
+				UsersExtra.removeFailedTries(user.getId());
 				return true;
 			}else{
 
+				//In case of a failed login we need to count that try 
+				UsersExtra.increaseErrorCountForLogin(user.getId());
 				//System.out.println("User doesn't exist "+set.getFetchSize());
 			}
 
@@ -434,6 +443,8 @@ public class UsersService {
 			{
 				removeToken(request.getToken().trim());
 				CommonFunctions.closeConnection(preparedStatement);
+				//Don't forget to remove the attempts otherwise they user can't login after he/she rest his/her password
+				UsersExtra.removeFailedTries(user.getId());
 				return new Response(true,"");
 			}else{
 				CommonFunctions.closeConnection(preparedStatement);

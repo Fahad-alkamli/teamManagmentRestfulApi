@@ -12,6 +12,12 @@ CREATE TABLE `assign_task_to_user` (
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `failed_login_counter` (
+  `user_id` int(11) NOT NULL,
+  `counter` int(11) NOT NULL DEFAULT '0',
+  `time_to_wait` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `project` (
   `project_id` int(11) NOT NULL,
   `project_name` varchar(255) NOT NULL,
@@ -23,14 +29,14 @@ CREATE TABLE `project` (
 CREATE TABLE `project_memebers` (
   `project_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `restore_password_requests` (
   `user_id` int(11) NOT NULL,
   `token` int(11) NOT NULL,
   `failed_tries_counter` int(11) NOT NULL DEFAULT '0',
   `expire_date` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tasks` (
   `project_id` int(11) NOT NULL,
@@ -52,13 +58,19 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+
 ALTER TABLE `assign_task_to_user`
   ADD PRIMARY KEY (`task_id`,`user_id`),
-  ADD KEY `task_id` (`task_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `task_id` (`task_id`);
+
+ALTER TABLE `failed_login_counter`
+  ADD PRIMARY KEY (`user_id`),
   ADD KEY `user_id` (`user_id`);
 
 ALTER TABLE `project`
-  ADD PRIMARY KEY (`project_id`);
+  ADD PRIMARY KEY (`project_id`),
+  ADD KEY `project_id` (`project_id`);
 
 ALTER TABLE `project_memebers`
   ADD PRIMARY KEY (`project_id`,`user_id`),
@@ -66,40 +78,41 @@ ALTER TABLE `project_memebers`
 
 ALTER TABLE `restore_password_requests`
   ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `token` (`token`);
+  ADD KEY `user_id` (`user_id`);
 
 ALTER TABLE `tasks`
   ADD PRIMARY KEY (`task_id`),
-  ADD KEY `project_id` (`project_id`),
-  ADD KEY `task_id` (`task_id`);
+  ADD KEY `task_id` (`task_id`),
+  ADD KEY `project_id` (`project_id`);
 
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `user_email` (`user_email`),
-  ADD UNIQUE KEY `session` (`session`),
-  ADD KEY `user_email_2` (`user_email`);
+  ADD KEY `user_id` (`user_id`);
 
 
 ALTER TABLE `project`
-  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 ALTER TABLE `tasks`
-  MODIFY `task_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `task_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `assign_task_to_user`
-  ADD CONSTRAINT `assign_task_to_user_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`),
-  ADD CONSTRAINT `members2_forign2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
+  ADD CONSTRAINT `assign_task_to_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `assign_task_to_user_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`) ON DELETE CASCADE;
+
+ALTER TABLE `failed_login_counter`
+  ADD CONSTRAINT `failed_login_counter_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
 
 ALTER TABLE `project_memebers`
-  ADD CONSTRAINT `members2_forign` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
-  ADD CONSTRAINT `members_forign` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`);
+  ADD CONSTRAINT `project_memebers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `project_memebers_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON DELETE CASCADE;
 
 ALTER TABLE `restore_password_requests`
-  ADD CONSTRAINT `restore_password_requests_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
+  ADD CONSTRAINT `restore_password_requests_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
 
 ALTER TABLE `tasks`
-  ADD CONSTRAINT `role_id_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`);
+  ADD CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

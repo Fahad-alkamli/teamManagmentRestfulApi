@@ -41,7 +41,7 @@ public class CommonFunctions {
 					public void run() {
 						try{
 						//	preparedStatement.getConnection().close();
-						//	preparedStatement.close();
+						preparedStatement.close();
 							//System.out.println("Connection has been closed");
 						}catch(Exception e)
 						{

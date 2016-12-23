@@ -12,10 +12,10 @@ import db.DBUtility;
 import db.poject.ProjectService;
 import db.task.TaskService;
 import db.user.user_extra_functions.UsersExtra;
+import email_server_setup.SendEmail;
 import entity.CommonFunctions;
 import entity.User;
 import logger.Logger;
-import login.SendEmail;
 import requests_entities.Response;
 import requests_entities.user.*;
 
@@ -108,7 +108,7 @@ public class UsersService {
 	}
 
 
-	public static boolean userExistsCheckByLogin(String email,String password)
+	public static Response userExistsCheckByLogin(String email,String password)
 	{
 		PreparedStatement preparedStatement =null;
 		try{
@@ -121,20 +121,27 @@ public class UsersService {
 			User user=userExistsCheckByEmail(email);
 			if(user==null)
 			{
-				return false;
+				return new Response(false,"user doesn't exists");
 			}
-			if(set.next() && UsersExtra.login_counter_state(user.getId()))
+			boolean loginState= UsersExtra.login_counter_state(user.getId());
+			if(set.next() &&loginState)
 			{
 				//System.out.println("User exists");
 				CommonFunctions.closeConnection(preparedStatement);
 				//Remove the old attempts 
 				UsersExtra.removeFailedTries(user.getId());
-				return true;
+				return new Response(true,"");
 			}else{
 
 				//In case of a failed login we need to count that try 
 				UsersExtra.increaseErrorCountForLogin(user.getId());
 				//System.out.println("User doesn't exist "+set.getFetchSize());
+				if(!loginState)
+				{
+					//user needs to back off for a short time
+					System.out.println("user needs to back off for a short time");
+					return new Response(false,"Too many attempts, please wait 10 minutes before trying again.");
+				}
 			}
 
 		}catch(Exception e)
@@ -144,7 +151,7 @@ public class UsersService {
 			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
 		}
 		CommonFunctions.closeConnection(preparedStatement);
-		return false;
+		return new Response(false,"");
 	}
 
 
@@ -202,7 +209,8 @@ public class UsersService {
 
 	//http://stackoverflow.com/questions/415953/how-can-i-generate-an-md5-hash
 	private static String GenerateSession() {
-		try {
+		do{
+		try {	
 			String md5 = Long.toString(System.currentTimeMillis());
 			md5+="Alkamli";
 			Random rnd=new Random();
@@ -215,13 +223,22 @@ public class UsersService {
 			{
 				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
 			}
-			return sb.toString();
+			//We make sure we always get a unique session 
+			if(getUserIdFromSession(sb.toString())==-1 || getUserIdFromSession(sb.toString())==0)
+			{
+				return sb.toString();
+			}else{
+				System.out.println("Not a unique session ");
+			}
+			
 		} catch (java.security.NoSuchAlgorithmException e) 
 		{
 			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
 
+		
 		}
-		return null;
+		}while(true);
+	
 	}
 
 

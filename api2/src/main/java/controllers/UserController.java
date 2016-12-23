@@ -60,11 +60,12 @@ public class UserController {
 	public ResponseEntity<String> login(@Valid @RequestBody UserLoginRequest user)  
 	{	
 		//we make sure the user exists in the system 
-		if(!UsersService.userExistsCheckByLogin(user.getEmail(),user.getPassword()))
+		Response validLoginResponse=UsersService.userExistsCheckByLogin(user.getEmail(),user.getPassword());
+		if(!validLoginResponse.getState())
 		{
 			//System.out.println("Trying to throw an exception");
 			//	throw new UserIsNotAuthorized();
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validLoginResponse.getJson(validLoginResponse));
 		}
 		//Next we start the login process and see either it's successful or not 
 		UserLoginResponse response=null;

@@ -1,4 +1,4 @@
-package login;
+package email_server_setup;
 
 
 import org.simplejavamail.email.Email;
@@ -12,6 +12,8 @@ public class SendEmail {
 
 	//https://www.tutorialspoint.com/java/java_sending_email.htm
 	private String userEmail,token;
+	private static final String serverEmail="";
+	private static final String serverPassword="";
 	public SendEmail(String userEmail,String token)
 	{
 		this.userEmail=userEmail;
@@ -23,13 +25,13 @@ public class SendEmail {
 	public  Response sendMessage() {   
 		try{
 			Email message = new EmailBuilder()
-					.from("TeamManagment App", "consolegbyte@gmail.com")
+					.from("TeamManagment App", serverEmail)
 					.to(userEmail,userEmail)
 					.subject("TeamManagment Forget Password Request")
-					.text("Your Token: "+token)
+					.text("Your Token is : "+token)
 					.build();
 
-			new Mailer("smtp.gmail.com", 25, "consolegbyte@gmail.com", "password", TransportStrategy.SMTP_TLS).sendMail(message,true);
+			new Mailer("smtp.gmail.com", 25, serverEmail, serverPassword, TransportStrategy.SMTP_TLS).sendMail(message,false);
 			return new Response(true,"");
 		}catch(Exception e)
 		{

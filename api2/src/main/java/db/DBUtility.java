@@ -21,6 +21,7 @@ public class DBUtility  {
 	 private static  String url = "jdbc:mysql://172.16.42.42:3306/TeamManagment?autoReconnect=true&useSSL=true&characterEncoding=UTF-8";
 	// private static  String url = "jdbc:mysql://localhost:3306/TeamManagment?autoReconnect=true&useSSL=false&characterEncoding=UTF-8";
 	   
+	 static final int numberOfconnections=29;
      private static  String password ="console";
 	static int pointer=0;
 	    public static synchronized Connection getConnection() 
@@ -28,7 +29,7 @@ public class DBUtility  {
 	            try {
 
 	            	//reset the pointer
-	            	if(pointer==29)
+	            	if(pointer>numberOfconnections)
 	            	{
 	            		pointer=0;
 	            	}
@@ -45,11 +46,11 @@ public class DBUtility  {
 	
 	            	}
 	            	//System.out.println("Check this:"+connectctionsList.size());
-	            	if(connectctionsList.size()<29)
+	            	if(connectctionsList.size()<numberOfconnections)
 	            	{
 	            		System.out.println("Give connection number: "+0);
 	            	
-	            		System.out.println("Check this:"+connectctionsList.size());
+	            		//System.out.println("Check this:"+connectctionsList.size());
 	            		return connectctionsList.get(0);
 	            	}
 	            	
@@ -68,7 +69,7 @@ public class DBUtility  {
 	            		return connectctionsList.get(0);
 	            	}
 	            	Connection connection=connectctionsList.get(pointer);
-	            	System.out.println("Give connection number: "+pointer);
+	            	System.out.println("Give connection number: "+(pointer+1));
 	            	pointer++;
 	            	return connection;
 	            }catch (Exception e) {
@@ -107,7 +108,7 @@ public class DBUtility  {
 	    {
 	    	try{
 	    	
-	    	for(int i=1;i<30;i++)
+	    	for(int i=1;i<=numberOfconnections;i++)
 	    	{
 	    		new Thread(new Runnable(){
 

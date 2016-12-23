@@ -58,7 +58,6 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 ALTER TABLE `assign_task_to_user`
   ADD PRIMARY KEY (`task_id`,`user_id`),
   ADD KEY `user_id` (`user_id`),
@@ -87,15 +86,16 @@ ALTER TABLE `tasks`
 
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `session` (`session`),
   ADD KEY `user_id` (`user_id`);
 
 
 ALTER TABLE `project`
-  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `project_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 ALTER TABLE `tasks`
-  MODIFY `task_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `task_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `assign_task_to_user`
   ADD CONSTRAINT `assign_task_to_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,

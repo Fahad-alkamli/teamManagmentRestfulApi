@@ -1,15 +1,19 @@
 package requests_entities.user;
 
+import static entities.CommonFunctions.NotEmpty;
+
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import entity.CommonFunctions;
-
+import entities.CommonFunctions;
+import static entities.CommonFunctions.ValidEmail;
 public class CreateUserRequest{
 	
 	//@Pattern(regexp = "^.{1,}\\@.{1,}\\..{1,}$")
 	 @NotNull
+	 @Pattern(regexp = ValidEmail)
 	 private String Email;
 	 @NotNull
 	 private String Name,Password;
@@ -63,7 +67,7 @@ public class CreateUserRequest{
 	    }
 
 	    public void setEmail(String email) {
-	        Email = email;
+	        Email = CommonFunctions.clean(email);
 	    }
 
 	    public String getPassword() {

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import db.poject.ProjectService;
 import db.user.UsersService;
-import entity.CommonFunctions;
-import entity.Project;
+import entities.CommonFunctions;
+import entities.Project;
 import requests_entities.Response;
 import requests_entities.project.*;
 @RestController
@@ -58,7 +58,7 @@ public class ProjectController {
 			return new ResponseEntity<String>(response.getMessage(),HttpStatus.OK);	
 		}catch(Exception e)
 		{
-				class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
 			return new ResponseEntity<String>(e.getMessage(),HttpStatus.METHOD_NOT_ALLOWED);	
 		}
 		//System.out.println("project has been enabled ");
@@ -86,7 +86,7 @@ public class ProjectController {
 			return new ResponseEntity<String>(response.getMessage(),HttpStatus.OK);	
 		}catch(Exception e)
 		{
-				class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
 			return new ResponseEntity<String>(e.getMessage(),HttpStatus.METHOD_NOT_ALLOWED);	
 		}
 		//System.out.println("project has been disabled ");
@@ -166,7 +166,7 @@ public class ProjectController {
 			}
 		}catch(Exception e)
 		{
-				class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
 		}
 		return new ResponseEntity<String>("",HttpStatus.METHOD_NOT_ALLOWED);	
 
@@ -229,16 +229,16 @@ public class ProjectController {
 			return new ResponseEntity<String>(e.getMessage(),HttpStatus.METHOD_NOT_ALLOWED);	
 
 		}
-		
-		
-		
-		
+
+
+
+
 	}
 
 	@RequestMapping(value="/update_project", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> updateProject(@Valid @RequestBody UpdateProjectRequest projectRequest)
 	{
-		
+
 		//validate that the request came from an admin account
 		if(!UsersService.validateAdminSession(projectRequest.getAdminSession()))
 		{
@@ -255,29 +255,27 @@ public class ProjectController {
 		System.out.println("project has been updated ");
 		return new ResponseEntity<String>(project.getJson(project),HttpStatus.OK);	
 	}
-	
-	
-	
+
 	@RequestMapping(value="/delete_project", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> deleteProject(@Valid @RequestBody DeleteProjectRequest request)
 	{
 		//validate that the request came from an admin account
-				if(!UsersService.validateAdminSession(request.getAdminSession()))
-				{
-					System.out.println("Trying to throw an exception UNAUTHORIZED");
-					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-				}
+		if(!UsersService.validateAdminSession(request.getAdminSession()))
+		{
+			System.out.println("Trying to throw an exception UNAUTHORIZED");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
 
-				Response response=ProjectService.deleteProject(request);
-				if(response.getState())
-				{
-					return new ResponseEntity<String>("",HttpStatus.OK);	
+		Response response=ProjectService.deleteProject(request);
+		if(response.getState())
+		{
+			return new ResponseEntity<String>("",HttpStatus.OK);	
 
-				}else{
-					
-					return new ResponseEntity<String>(response.getMessage(),HttpStatus.METHOD_NOT_ALLOWED);	
+		}else{
 
-				}
+			return new ResponseEntity<String>(response.getMessage(),HttpStatus.METHOD_NOT_ALLOWED);	
+
+		}
 	}
 
 

@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.Random;
 
 import db.DBUtility;
-import entity.CommonFunctions;
+import db.user.UsersService;
+import entities.CommonFunctions;
+import entities.User;
 import logger.Logger;
 import requests_entities.Response;
 
@@ -205,6 +207,167 @@ public class UsersExtra {
 			CommonFunctions.closeConnection(preparedStatement);
 			
 		}
+	}
+
+	
+	public static void deleteAllRequestForPasswordForUser(int userId)
+	{
+		PreparedStatement preparedStatement =null;		
+
+		try{
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("delete from restore_password_requests where user_id=?");
+			preparedStatement.setInt(1, userId);
+			if(preparedStatement.executeUpdate()>0)
+			{
+				//System.out.println("deleteAllRequestForPasswordForUser is secessful");
+				CommonFunctions.closeConnection(preparedStatement);
+				return;
+			}
+
+		}catch(Exception e)
+		{
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+		}
+		CommonFunctions.closeConnection(preparedStatement);
+
+	}
+
+	public static Response validateToken(String token,int userId)
+	{
+		PreparedStatement preparedStatement =null;
+		try{
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select * from restore_password_requests where token=? and user_id=?");
+			preparedStatement.setString(1, token);
+			preparedStatement.setInt(2, userId);
+			ResultSet result=  preparedStatement.executeQuery();
+			if(result.next())
+			{
+				int user_id=result.getInt("user_id");
+				CommonFunctions.closeConnection(preparedStatement);
+				User user=UsersService.userExistsCheckById(user_id);
+				if(user ==null)
+				{
+					return new Response(false,"");
+				}
+				return new Response(true,user.getEmail());
+			}else{
+				CommonFunctions.closeConnection(preparedStatement);
+				increaseTokenCounter(userId);
+				return new Response(false,"");
+			}
+		}catch(Exception e)
+		{
+			CommonFunctions.closeConnection(preparedStatement);
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			return new Response(false,"");
+		}
+	}
+
+	//This will increase the counter for each token to protect the token from bruteforce attacks
+	@SuppressWarnings("resource")
+	public static void increaseTokenCounter(int userId)
+	{
+		PreparedStatement preparedStatement =null;
+		try{
+			//First we check the counter for the token if it's more than 3 tries then remove the token ,otherwise increase the token by 1
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select * from restore_password_requests where user_id=?");
+			preparedStatement.setInt(1, userId);
+			ResultSet result=preparedStatement.executeQuery();
+			if(result.next())
+			{
+				int counter=result.getInt("failed_tries_counter");
+				CommonFunctions.closeConnection(preparedStatement);
+
+				if(counter>=3)
+				{
+					//Remove the token 
+					preparedStatement = DBUtility.getConnection()
+							.prepareStatement("delete from restore_password_requests where user_id=?");
+					preparedStatement.setInt(1, userId);
+					preparedStatement.executeUpdate();
+					CommonFunctions.closeConnection(preparedStatement);
+					return;
+				}else{
+					//Increase the token by 1
+					counter++;
+					preparedStatement = DBUtility.getConnection().prepareStatement("update restore_password_requests set failed_tries_counter=? where user_id=?");
+					preparedStatement.setInt(1, counter);
+					preparedStatement.setInt(2, userId);
+					preparedStatement.executeUpdate();
+					CommonFunctions.closeConnection(preparedStatement);
+					return;
+				}	
+			}else{
+				CommonFunctions.closeConnection(preparedStatement);
+				return;
+			}
+
+		}catch(Exception e)
+		{
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			CommonFunctions.closeConnection(preparedStatement);
+
+		}
+	}
+
+	public static void removeToken(String token)
+	{
+		PreparedStatement preparedStatement =null;		
+		try{
+
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("delete from restore_password_requests where token=?");
+			preparedStatement.setString(1, token);
+			preparedStatement.executeUpdate();
+			CommonFunctions.closeConnection(preparedStatement);
+			return;
+		}catch(Exception e)
+		{
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+		}
+		CommonFunctions.closeConnection(preparedStatement);
+	}
+
+
+	//http://stackoverflow.com/questions/415953/how-can-i-generate-an-md5-hash
+	public static String GenerateSession() {
+		do{
+			try {	
+				String md5 = Long.toString(System.currentTimeMillis());
+				md5+="Alkamli";
+				Random rnd=new Random();
+				md5+=Integer.toString(rnd.nextInt(999999));
+				md5+=Integer.toString(rnd.nextInt(999999));
+				java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+				byte[] array = md.digest(md5.getBytes());
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < array.length; ++i) 
+				{
+					sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+				}
+				//We make sure we always get a unique session 
+				if(UsersService.getUserIdFromSession(sb.toString())==-1 || UsersService.getUserIdFromSession(sb.toString())==0)
+				{
+					return sb.toString();
+				}else{
+					System.out.println("Not a unique session ");
+				}
+
+			} catch (java.security.NoSuchAlgorithmException e) 
+			{
+				class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+
+
+			}
+		}while(true);
+
 	}
 
 }

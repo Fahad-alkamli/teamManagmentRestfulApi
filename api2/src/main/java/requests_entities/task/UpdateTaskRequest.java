@@ -2,8 +2,8 @@ package requests_entities.task;
 
 import javax.validation.constraints.NotNull;
 
-import entity.CommonFunctions;
-import entity.Task;
+import entities.CommonFunctions;
+import entities.Task;
 
 public class UpdateTaskRequest extends Task{
 

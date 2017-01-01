@@ -4,8 +4,9 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import entities.CommonFunctions;
+
 import javax.validation.constraints.Min;
-import entity.CommonFunctions;
 
 public class SubmitTaskCompleteRequest {
 	

@@ -1,35 +1,23 @@
 package controllers;
 
 import java.util.ArrayList;
-
 import javax.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import db.user.UsersService;
-import entity.CommonFunctions;
-import entity.User;
+import entities.CommonFunctions;
+import entities.User;
 import requests_entities.Response;
 import requests_entities.project.SessionOnlyRequest;
-import requests_entities.user.ChangePasswordRequestByAdmin;
-import requests_entities.user.ChangePasswordRequestByToken;
-import requests_entities.user.CreateUserRequest;
-import requests_entities.user.DeleteUserRequest;
-import requests_entities.user.LogoutUserRequest;
-import requests_entities.user.ResetPasswordRequest;
-import requests_entities.user.UserLoginRequest;
-import requests_entities.user.UserLoginResponse;
+import requests_entities.user.*;
 
 @RestController
 public class UserController {
+
 
 	@RequestMapping(value="/create_user", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> createUser(@Valid @RequestBody CreateUserRequest user)  
@@ -93,7 +81,7 @@ public class UserController {
 	@RequestMapping(value="/get_all_users", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> getAllUsers(@Valid @RequestBody SessionOnlyRequest request)
 	{
-		try{
+		try{	
 			//Before we call any function we need to validate the session that it actually belongs to a user 
 			int userId=UsersService.getUserIdFromSession(request.getSession());
 			if(userId==-1 || userId==0)
@@ -141,7 +129,7 @@ public class UserController {
 		return new ResponseEntity<String>("",HttpStatus.METHOD_NOT_ALLOWED);	
 
 	}
-	
+
 	@RequestMapping(value="/change_password_by_token", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> changePasswordByToken(@Valid @RequestBody ChangePasswordRequestByToken request)
 	{
@@ -159,59 +147,147 @@ public class UserController {
 		}
 
 	}
-	
+
 	@RequestMapping(value="/change_password_by_admin", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> changePasswordByAdmin(@Valid @RequestBody ChangePasswordRequestByAdmin request)
 	{
 		try{
-		//Validate the admin first
-		if(!UsersService.validateAdminSession(request.getAdminSession()))
+			//Validate the admin first
+			if(!UsersService.validateAdminSession(request.getAdminSession()))
+			{
+				//System.out.println("Trying to throw an exception");
+				//	throw new UserIsNotAuthorized();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			}
+
+			Response response=UsersService.changeUserPassword(request.getUserId(),request.getNewPassword());
+			if(response.getState())
+			{
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else{
+				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+			}
+		}catch(Exception e)
 		{
-			//System.out.println("Trying to throw an exception");
-			//	throw new UserIsNotAuthorized();
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
 		}
-		
-		Response response=UsersService.changeUserPassword(request.getUserId(),request.getNewPassword());
-		if(response.getState())
-		{
-			return ResponseEntity.status(HttpStatus.OK).body(null);
-		}else{
-			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
-		}
-	}catch(Exception e)
-	{
-		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
-	}
-		
+
 	}
 
 	@RequestMapping(value="/delete_user", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> deleteUser(@Valid @RequestBody DeleteUserRequest request)
 	{
 		try{
-		//Validate the admin first
-		if(!UsersService.validateAdminSession(request.getAdminSession()))
+			//Validate the admin first
+			if(!UsersService.validateAdminSession(request.getAdminSession()))
+			{
+				//System.out.println("Trying to throw an exception");
+				//	throw new UserIsNotAuthorized();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			}
+
+			Response response=UsersService.deleteUser(request.getUserId());
+			if(response.getState())
+			{
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else{
+				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+			}
+		}catch(Exception e)
 		{
-			//System.out.println("Trying to throw an exception");
-			//	throw new UserIsNotAuthorized();
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
 		}
-		
-		Response response=UsersService.deleteUser(request.getUserId());
-		if(response.getState())
-		{
-			return ResponseEntity.status(HttpStatus.OK).body(null);
-		}else{
-			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
-		}
-	}catch(Exception e)
-	{
-		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
-	}
-		
+
 	}
 	
+	@RequestMapping(value="/change_password_by_user_session", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
+	public ResponseEntity<String> changePasswordByUserSession(@Valid @RequestBody ChangePasswordRequestByUserSession request)
+	{
+		try{
+			int userId=UsersService.getUserIdFromSession(request.getSession());
+			if(userId==0 || userId==-1)
+			{
+				//System.out.println("Trying to throw an exception");
+				//	throw new UserIsNotAuthorized();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			}
+
+			//One more step, validate the old password to make sure that the user actually knows his/her old password 
+			//You can think of it as another way of authenticating that the session actually belongs to the user
+			if(!UsersService.validateUserPassword(userId,request.getOldPassword()).getState())
+			{
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);	
+			}
+			Response response=UsersService.changeUserPassword(Integer.toString(userId),request.getNewPassword());
+			if(response.getState())
+			{
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else{
+				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+			}
+		}catch(Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
+		}
+	}
+	
+	
+	@RequestMapping(value="/change_email_by_user_session", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
+	public ResponseEntity<String> changeEmailByUserSession(@Valid @RequestBody ChangeEmail request)
+	{
+		try{
+			int userId=UsersService.getUserIdFromSession(request.getSession());
+			if(userId==0 || userId==-1)
+			{
+				//System.out.println("Trying to throw an exception");
+				//	throw new UserIsNotAuthorized();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			}
+
+			//One more step, validate the password to make sure that the user actually knows his/her password 
+			//You can think of it as another way of authenticating that the session actually belongs to the user
+			if(!UsersService.validateUserPassword(userId,request.getPassword()).getState())
+			{
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);	
+			}
+			Response response=UsersService.changeEmail(userId,request.getEmail());
+			if(response.getState())
+			{
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else{
+				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+			}
+		}catch(Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
+		}
+		
+	}
+	@RequestMapping(value="/change_nickname_by_user_session", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
+	public ResponseEntity<String> changeNicknameByUserSession(@Valid @RequestBody ChangeNickName request)
+	{
+		try{
+			int userId=UsersService.getUserIdFromSession(request.getSession());
+			if(userId==0 || userId==-1)
+			{
+				//System.out.println("Trying to throw an exception");
+				//	throw new UserIsNotAuthorized();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			}
+
+			Response response=UsersService.changeNickname(userId,request.getNickname());
+			if(response.getState())
+			{
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else{
+				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+			}
+		}catch(Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
+		}	
+		
+	}
 
 
 }

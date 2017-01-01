@@ -3,7 +3,6 @@ package db.poject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mysql.jdbc.Statement;
@@ -11,16 +10,12 @@ import com.mysql.jdbc.Statement;
 import db.DBUtility;
 import db.task.TaskService;
 import db.user.UsersService;
-import entity.CommonFunctions;
-import entity.Project;
-import entity.User;
+import entities.CommonFunctions;
+import entities.Project;
+import entities.User;
 import logger.Logger;
 import requests_entities.Response;
-import requests_entities.project.CreateProjectRequest;
-import requests_entities.project.DeleteProjectRequest;
-import requests_entities.project.RemoveUserFromProject;
-import requests_entities.project.SessionOnlyRequest;
-import requests_entities.project.UpdateProjectRequest;
+import requests_entities.project.*;
 
 public class ProjectService {
 
@@ -311,7 +306,6 @@ public class ProjectService {
 		return null;
 	}
 
-
 	public static Response getAllUsersThatBelongToProject(int projectId)
 	{
 		PreparedStatement preparedStatement =null;
@@ -379,7 +373,6 @@ public class ProjectService {
 		}
 	}
 
-
 	public static Response removeUsersFromAllProjects(String userId)
 	{
 		PreparedStatement preparedStatement=null;
@@ -410,8 +403,6 @@ public class ProjectService {
 		}
 	}
 
-
-
 	public static User doesUserBelongToProject(int userId,int projectId)
 	{
 		PreparedStatement preparedStatement=null;
@@ -428,10 +419,10 @@ public class ProjectService {
 				User user=UsersService.userExistsCheckById(result.getInt("user_id"));
 				if(user != null)
 				{
-				return user;
+					return user;
 				}
 			}
-			
+
 		}catch(Exception e)
 		{
 			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
@@ -477,7 +468,6 @@ public class ProjectService {
 
 		return null;
 	}
-
 
 	public static Response deleteProject(DeleteProjectRequest request)
 	{

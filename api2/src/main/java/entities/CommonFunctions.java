@@ -1,10 +1,15 @@
-package entity;
+package entities;
+
 
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.nio.file.*;
 public class CommonFunctions {
+
+	public static final String NotEmpty="^(\\s{0,}\\S{1,}\\s{0,}){1,}$";
+	public static final String ValidEmail="^\\s{0,}\\S{1,}\\@\\S{1,}\\.\\S{1,}\\s{0,}$";
+	
 	public static String clean(String temp)
 	{
 		try {
@@ -53,6 +58,7 @@ public class CommonFunctions {
 				new Thread(run).start();
 		
 	}
+	
 	public static void ErrorLogger(String message)
 	{
 		try{
@@ -84,5 +90,24 @@ public class CommonFunctions {
 
 	}
 
+	public static boolean notEmpty(String temp)
+	{
+		try{
+			if(temp == null)
+			{
+				return false;
+			}else if(clean(temp).length()<1)
+			{
+				return false;
+			}else{
+				return true;
+			}
+			
+		}catch(Exception e)
+		{
+			
+		}
+		return false;
+	}
 
 }

@@ -3,16 +3,12 @@ package db.task.task_extra_functions;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import db.DBUtility;
 import db.poject.ProjectService;
-import entity.CommonFunctions;
-import entity.Project;
-import entity.Task;
-import entity.TaskListViewElement;
+import entities.*;
 import logger.Logger;
 import requests_entities.Response;
 
@@ -117,7 +113,7 @@ public class TaskExtra {
 				//The result of the query returned 0 
 				return new Response(true,"");
 			}
-			
+
 			//Return tasks;
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -135,7 +131,6 @@ public class TaskExtra {
 			return new Response(false,e.getMessage());
 		}
 	}
-
 
 	public static Response getAllTasksForUserResponse(int userId)
 	{
@@ -186,7 +181,7 @@ public class TaskExtra {
 				//This make sure that the user receive only tasks that belong to an active project 
 				if(project.isEnabledState())
 				{
-				tasks.add(element);
+					tasks.add(element);
 				}
 				CommonFunctions.closeConnection(preparedStatement);
 			}
@@ -239,7 +234,6 @@ public class TaskExtra {
 		return false;
 	}
 
-
 	public static boolean deleteAllAssignmentsFromATask(String taskId)
 	{
 		PreparedStatement preparedStatement=null;
@@ -268,7 +262,6 @@ public class TaskExtra {
 		////System.out.println("Assignment has not been deleted");
 		return false;
 	}
-
 
 	public static ArrayList<Task> getAllTasksForUser(String userid)
 	{

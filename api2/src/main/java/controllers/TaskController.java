@@ -1,18 +1,16 @@
 package controllers;
 
 import javax.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import db.task.TaskService;
 import db.task.task_extra_functions.TaskExtra;
 import db.user.UsersService;
-import entity.Task;
+import entities.Task;
 import requests_entities.Response;
 import requests_entities.task.*;
 
@@ -39,7 +37,6 @@ public class TaskController {
 		}		
 	}
 
-
 	@RequestMapping(value="/get_all_tasks", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> getAllTasks(@Valid @RequestBody GetAllTasksRequest request)
 	{
@@ -63,7 +60,6 @@ public class TaskController {
 
 	}
 
-
 	@RequestMapping(value="/update_task", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> updateTask(@Valid @RequestBody UpdateTaskRequest request)
 	{
@@ -84,6 +80,7 @@ public class TaskController {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
 		}
 	}
+	
 	@RequestMapping(value="/delete_task", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> deleteTask(@Valid @RequestBody DeleteTaskRequest request)
 	{
@@ -93,7 +90,7 @@ public class TaskController {
 			//System.out.println("Trying to throw an exception UNAUTHORIZED");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
-		
+
 		Response response=TaskService.deleteTask(request.getTaskId());
 		if(response.getState())
 		{
@@ -109,21 +106,21 @@ public class TaskController {
 	public ResponseEntity<String> assignTaskToUser(@Valid @RequestBody AssignTaskToUserRequest request)
 	{
 
-				if(!UsersService.validateAdminSession(request.getAdminSession()))
-				{
-					//System.out.println("Trying to throw an exception UNAUTHORIZED");
-					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-				}
+		if(!UsersService.validateAdminSession(request.getAdminSession()))
+		{
+			//System.out.println("Trying to throw an exception UNAUTHORIZED");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
 
-				Response response=TaskService.assignTaskToUser(request);
-				if(response.getState())
-				{
-					//System.out.println(response.getMessage());
-					return new ResponseEntity<String>(response.getMessage(),HttpStatus.OK);	
+		Response response=TaskService.assignTaskToUser(request);
+		if(response.getState())
+		{
+			//System.out.println(response.getMessage());
+			return new ResponseEntity<String>(response.getMessage(),HttpStatus.OK);	
 
-				}else{
-					return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
-				}
+		}else{
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+		}
 	}
 
 	@RequestMapping(value="/get_task_members", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
@@ -196,9 +193,8 @@ public class TaskController {
 		}else{
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
 		}
-		
-	}
 
+	}
 
 	@RequestMapping(value="/submit_task_not_complete", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> submitTaskNotComplete(@Valid @RequestBody SubmitTaskNotCompleteRequest request)
@@ -229,9 +225,8 @@ public class TaskController {
 		}else{
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
 		}
-		
-	}
 
+	}
 
 	@RequestMapping(value="/add_hours_to_task", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> addHoursToTask(@Valid @RequestBody AddHoursToTaskRequest request)
@@ -254,7 +249,7 @@ public class TaskController {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
 		}
 		task.setDone_total_hours(task.getDone_total_hours()+request.getHours());
-		
+
 		UpdateTaskRequest request2=new UpdateTaskRequest(request.getSession(),task);
 		Response response=TaskService.updateTask(request2);
 		if(response.getState())
@@ -264,12 +259,12 @@ public class TaskController {
 		}else{
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
 		}
-		
+
 	}
 
 
-	
-	
-	
-	
+
+
+
+
 }

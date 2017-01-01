@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import entity.CommonFunctions;
+import entities.CommonFunctions;
 
 public class RemoveUserFromProject {
 

@@ -3,7 +3,6 @@ package db.task;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mysql.jdbc.Statement;
@@ -11,21 +10,18 @@ import com.mysql.jdbc.Statement;
 import db.DBUtility;
 import db.poject.ProjectService;
 import db.user.UsersService;
+import entities.CommonFunctions;
+import entities.Task;
+import entities.User;
 import db.task.task_extra_functions.TaskExtra;
-import entity.CommonFunctions;
-import entity.Task;
-import entity.User;
 import logger.Logger;
 import requests_entities.Response;
-import requests_entities.task.AssignTaskToUserRequest;
-import requests_entities.task.CreateTaskRequest;
-import requests_entities.task.RemoveUsersFromTaskRequest;
-import requests_entities.task.UpdateTaskRequest;
+import requests_entities.task.*;
 
 public class TaskService {
 
 	static Logger log = new Logger(TaskService.class.getName());
-	
+
 	public static Response createTask(CreateTaskRequest request)
 	{
 		PreparedStatement preparedStatement=null;
@@ -166,7 +162,7 @@ public class TaskService {
 				}
 
 				//We need to make sure that the user is assigned to that project before giving him/her a task that belong to that project?!
-				
+
 				if(ProjectService.doesUserBelongToProject(request.getUserId(),task.getProject_id())==null)
 				{
 					return new Response(false,"User doesn't belong to the project");
@@ -378,7 +374,6 @@ public class TaskService {
 			return new Response(false,e.getMessage());	
 		}
 	}
-
 
 	public static Response removeTheUserFromAllTasks(int userId)
 	{

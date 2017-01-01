@@ -3,9 +3,6 @@ package db.user;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Random;
-
-
 import com.mysql.jdbc.Statement;
 
 import db.DBUtility;
@@ -13,8 +10,8 @@ import db.poject.ProjectService;
 import db.task.TaskService;
 import db.user.user_extra_functions.UsersExtra;
 import email_server_setup.SendEmail;
-import entity.CommonFunctions;
-import entity.User;
+import entities.CommonFunctions;
+import entities.User;
 import logger.Logger;
 import requests_entities.Response;
 import requests_entities.user.*;
@@ -26,7 +23,7 @@ public class UsersService {
 	public static Response createUser(CreateUserRequest user)
 	{
 		PreparedStatement preparedStatement =null;
-		
+
 		try{
 			preparedStatement = DBUtility.getConnection()
 					.prepareStatement("insert into user(user_name,user_email,user_password,admin) values (?, ?, ?,?)",Statement.RETURN_GENERATED_KEYS);
@@ -55,10 +52,10 @@ public class UsersService {
 		}catch(Exception e)
 		{
 			CommonFunctions.closeConnection(preparedStatement);
-			
+
 			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
 			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-			
+
 			//e.printStackTrace();
 			return new Response(false,e.getMessage());
 		}
@@ -67,7 +64,6 @@ public class UsersService {
 
 	}
 
-
 	/*
 	 * Validate That this request came from an Admin account 
 	 */
@@ -75,7 +71,7 @@ public class UsersService {
 	{
 		PreparedStatement preparedStatement=null;
 		try{
-			
+
 			if(adminSession ==null || adminSession.equals(""))
 			{
 				return false;
@@ -106,7 +102,6 @@ public class UsersService {
 		CommonFunctions.closeConnection(preparedStatement);
 		return false;
 	}
-
 
 	public static Response userExistsCheckByLogin(String email,String password)
 	{
@@ -154,11 +149,10 @@ public class UsersService {
 		return new Response(false,"");
 	}
 
-
 	public static UserLoginResponse loginAndReturnSession(UserLoginRequest user)
 	{
 
-		String session=GenerateSession();
+		String session=UsersExtra.GenerateSession();
 		PreparedStatement preparedStatement=null;
 		try{
 
@@ -206,42 +200,6 @@ public class UsersService {
 
 	}
 
-
-	//http://stackoverflow.com/questions/415953/how-can-i-generate-an-md5-hash
-	private static String GenerateSession() {
-		do{
-		try {	
-			String md5 = Long.toString(System.currentTimeMillis());
-			md5+="Alkamli";
-			Random rnd=new Random();
-			md5+=Integer.toString(rnd.nextInt(999999));
-			md5+=Integer.toString(rnd.nextInt(999999));
-			java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-			byte[] array = md.digest(md5.getBytes());
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < array.length; ++i) 
-			{
-				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
-			}
-			//We make sure we always get a unique session 
-			if(getUserIdFromSession(sb.toString())==-1 || getUserIdFromSession(sb.toString())==0)
-			{
-				return sb.toString();
-			}else{
-				System.out.println("Not a unique session ");
-			}
-			
-		} catch (java.security.NoSuchAlgorithmException e) 
-		{
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-
-		
-		}
-		}while(true);
-	
-	}
-
-
 	public static void logout(LogoutUserRequest session)
 	{
 		PreparedStatement preparedStatement=null;
@@ -266,7 +224,6 @@ public class UsersService {
 
 
 	}
-
 
 	public static User userExistsCheckById(int userId)
 	{
@@ -306,7 +263,6 @@ public class UsersService {
 		return null;
 	}
 
-
 	public static int getUserIdFromSession(String session)
 	{
 		PreparedStatement preparedStatement =null;
@@ -345,7 +301,6 @@ public class UsersService {
 		return -1;
 	}
 
-
 	public static ArrayList<User> getAllUsers(String session,int userId)
 	{
 		//If the user is an admin then i will fetch all the users if not then Get me users that belong to a project i am enrolled in 
@@ -363,12 +318,12 @@ public class UsersService {
 				preparedStatement.setInt(1,userId);
 
 			}else{
-			
+
 				//preparedStatement = DBUtility.getConnection().prepareStatement("select user_id,admin,user_name,user_email from user where user_id <> ? and user_id in (select user_id from project_memebers WHERE project_id in (select DISTINCT(project_id) from project_memebers where user_id=?))");
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select user_id,admin,user_name,user_email from user where user_id <> ? and user_id"
-					+ " in (select user_id from project_memebers WHERE project_id in(select DISTINCT(project_id) from project_memebers where user_id=? and project_id "
-					+ "in(select project_id from project where project_id =project_id and enabled=true)))");
+				preparedStatement = DBUtility.getConnection()
+						.prepareStatement("select user_id,admin,user_name,user_email from user where user_id <> ? and user_id"
+								+ " in (select user_id from project_memebers WHERE project_id in(select DISTINCT(project_id) from project_memebers where user_id=? and project_id "
+								+ "in(select project_id from project where project_id =project_id and enabled=true)))");
 				preparedStatement.setInt(1,(userId));
 				preparedStatement.setInt(2,(userId));
 			}
@@ -382,7 +337,7 @@ public class UsersService {
 			if(temp.isEmpty())
 			{
 				//The query result was 0
-		//		//System.out.println("The query result was 0");
+				//		//System.out.println("The query result was 0");
 				CommonFunctions.closeConnection(preparedStatement);
 				return temp;
 			}
@@ -397,7 +352,6 @@ public class UsersService {
 		return null;
 	}
 
-
 	public static User userExistsCheckByEmail(String userEmail)
 	{
 		PreparedStatement preparedStatement =null;
@@ -410,7 +364,7 @@ public class UsersService {
 			if(set.next())
 			{
 				//System.out.println("User exists");
-			
+
 				User user=new User();
 				user.setId(set.getInt("user_id"));
 				user.setAdmin(set.getBoolean("admin"));
@@ -433,7 +387,6 @@ public class UsersService {
 		return null;
 	}
 
-
 	public static Response changePasswordWithToken(ChangePasswordRequestByToken request)
 	{
 
@@ -445,7 +398,7 @@ public class UsersService {
 			{
 				return new Response(false,"Not a valid email");
 			}
-			Response response=validateToken(request.getToken(),user.getId());
+			Response response=UsersExtra.validateToken(request.getToken(),user.getId());
 			if(!response.getState())
 			{
 				return new Response(false,"Not a valid token");
@@ -458,7 +411,7 @@ public class UsersService {
 			int result=  preparedStatement.executeUpdate();
 			if(result>0)
 			{
-				removeToken(request.getToken().trim());
+				UsersExtra.removeToken(request.getToken().trim());
 				CommonFunctions.closeConnection(preparedStatement);
 				//Don't forget to remove the attempts otherwise they user can't login after he/she rest his/her password
 				UsersExtra.removeFailedTries(user.getId());
@@ -479,7 +432,6 @@ public class UsersService {
 
 
 	}
-
 
 	public static Response requestPasswordReset(User user)
 	{
@@ -541,108 +493,6 @@ public class UsersService {
 
 	}
 
-
-	private static Response validateToken(String token,int userId)
-	{
-		PreparedStatement preparedStatement =null;
-		try{
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from restore_password_requests where token=? and user_id=?");
-			preparedStatement.setString(1, token);
-			preparedStatement.setInt(2, userId);
-			ResultSet result=  preparedStatement.executeQuery();
-			if(result.next())
-			{
-				int user_id=result.getInt("user_id");
-				CommonFunctions.closeConnection(preparedStatement);
-				User user=userExistsCheckById(user_id);
-				if(user ==null)
-				{
-					return new Response(false,"");
-				}
-				return new Response(true,user.getEmail());
-			}else{
-				CommonFunctions.closeConnection(preparedStatement);
-				increaseTokenCounter(userId);
-				return new Response(false,"");
-			}
-		}catch(Exception e)
-		{
-			CommonFunctions.closeConnection(preparedStatement);
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
-			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-			return new Response(false,"");
-		}
-	}
-
-	//This will increase the counter for each token to protect the token from bruteforce attacks
-	@SuppressWarnings("resource")
-	private static void increaseTokenCounter(int userId)
-	{
-		PreparedStatement preparedStatement =null;
-		try{
-			//First we check the counter for the token if it's more than 3 tries then remove the token ,otherwise increase the token by 1
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from restore_password_requests where user_id=?");
-			preparedStatement.setInt(1, userId);
-			ResultSet result=preparedStatement.executeQuery();
-			if(result.next())
-			{
-				int counter=result.getInt("failed_tries_counter");
-				CommonFunctions.closeConnection(preparedStatement);
-				
-				if(counter>=3)
-				{
-					//Remove the token 
-					preparedStatement = DBUtility.getConnection()
-							.prepareStatement("delete from restore_password_requests where user_id=?");
-					preparedStatement.setInt(1, userId);
-					preparedStatement.executeUpdate();
-					CommonFunctions.closeConnection(preparedStatement);
-					return;
-				}else{
-					//Increase the token by 1
-					counter++;
-					preparedStatement = DBUtility.getConnection().prepareStatement("update restore_password_requests set failed_tries_counter=? where user_id=?");
-					preparedStatement.setInt(1, counter);
-					preparedStatement.setInt(2, userId);
-					preparedStatement.executeUpdate();
-					CommonFunctions.closeConnection(preparedStatement);
-					return;
-				}	
-			}else{
-				CommonFunctions.closeConnection(preparedStatement);
-				return;
-			}
-			
-		}catch(Exception e)
-		{
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
-			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-			CommonFunctions.closeConnection(preparedStatement);
-			
-		}
-	}
-
-	private static void removeToken(String token)
-	{
-		PreparedStatement preparedStatement =null;		
-		try{
-
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("delete from restore_password_requests where token=?");
-			preparedStatement.setString(1, token);
-			preparedStatement.executeUpdate();
-			CommonFunctions.closeConnection(preparedStatement);
-			return;
-		}catch(Exception e)
-		{
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
-			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-		}
-		CommonFunctions.closeConnection(preparedStatement);
-	}
-
 	public static Response deleteUser(String userId)
 	{
 		PreparedStatement preparedStatement =null;		
@@ -656,7 +506,7 @@ public class UsersService {
 			//Remove the user from all the projects first 
 			ProjectService.removeUsersFromAllProjects(userId); //Delete from this table projet_members
 			TaskService.removeTheUserFromAllTasks(Integer.parseInt(userId))	;//assigned_task_to_user
-			deleteAllRequestForPasswordForUser(Integer.parseInt(userId));//restore password requests
+			UsersExtra.deleteAllRequestForPasswordForUser(Integer.parseInt(userId));//restore password requests
 
 			preparedStatement = DBUtility.getConnection()
 					.prepareStatement("delete from user where user_id=?");
@@ -679,6 +529,7 @@ public class UsersService {
 			return new Response(false,e.getMessage());
 		}
 	}
+
 	public static Response changeUserPassword(String userId,String password)
 	{
 		PreparedStatement preparedStatement =null;		
@@ -709,31 +560,84 @@ public class UsersService {
 
 	}
 
+	public static Response validateUserPassword(int userId,String password)
+	{
+		PreparedStatement preparedStatement= null;
+		try{	
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select * from user where user_id=? and user_password=?");
+			preparedStatement.setInt(1, userId);
+			preparedStatement.setString(2, password);
+			ResultSet set= preparedStatement.executeQuery();
+			if(set.next())
+			{
+				CommonFunctions.closeConnection(preparedStatement);
+			return new Response(true,"");
+			}
+		}catch(Exception e)
+		{
+			CommonFunctions.closeConnection(preparedStatement);
+			return new Response(false,e.getMessage());
+		}
+		CommonFunctions.closeConnection(preparedStatement);
+		return new Response(false,"");
+	}
 
-
-
-	private static void deleteAllRequestForPasswordForUser(int userId)
+	
+	public static Response changeEmail(int userId,String email)
 	{
 		PreparedStatement preparedStatement =null;		
-
 		try{
 			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("delete from restore_password_requests where user_id=?");
-			preparedStatement.setInt(1, userId);
+					.prepareStatement("update user set user_email=? where user_id=?");
+			preparedStatement.setString(1, email);
+			preparedStatement.setInt(2, userId);
 			if(preparedStatement.executeUpdate()>0)
 			{
-				//System.out.println("deleteAllRequestForPasswordForUser is secessful");
 				CommonFunctions.closeConnection(preparedStatement);
-				return;
+				return new Response(true,"");
+
+			}else{
+				CommonFunctions.closeConnection(preparedStatement);
+				return new Response(false,"");
 			}
+
 
 		}catch(Exception e)
 		{
+			CommonFunctions.closeConnection(preparedStatement);
 			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
 			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			return new Response(false,e.getMessage());
 		}
-		CommonFunctions.closeConnection(preparedStatement);
-
 	}
 
+	public static Response changeNickname(int userId,String nickname)
+	{
+		PreparedStatement preparedStatement =null;		
+		try{
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("update user set user_name=? where user_id=?");
+			preparedStatement.setString(1, nickname);
+			preparedStatement.setInt(2, userId);
+			if(preparedStatement.executeUpdate()>0)
+			{
+				CommonFunctions.closeConnection(preparedStatement);
+				return new Response(true,"");
+
+			}else{
+				CommonFunctions.closeConnection(preparedStatement);
+				return new Response(false,"");
+			}
+
+
+		}catch(Exception e)
+		{
+			CommonFunctions.closeConnection(preparedStatement);
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage()));
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			return new Response(false,e.getMessage());
+		}
+		
+	}
 }

@@ -189,8 +189,6 @@ public class UsersExtra {
 		
 	}
 
-
-	
 	public static void removeFailedTries(int userId)
 	{	PreparedStatement preparedStatement=null;
 	
@@ -209,7 +207,6 @@ public class UsersExtra {
 		}
 	}
 
-	
 	public static void deleteAllRequestForPasswordForUser(int userId)
 	{
 		PreparedStatement preparedStatement =null;		
@@ -334,7 +331,6 @@ public class UsersExtra {
 		}
 		CommonFunctions.closeConnection(preparedStatement);
 	}
-
 
 	//http://stackoverflow.com/questions/415953/how-can-i-generate-an-md5-hash
 	public static String GenerateSession() {

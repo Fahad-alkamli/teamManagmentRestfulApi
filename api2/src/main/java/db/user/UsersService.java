@@ -582,7 +582,6 @@ public class UsersService {
 		CommonFunctions.closeConnection(preparedStatement);
 		return new Response(false,"");
 	}
-
 	
 	public static Response changeEmail(int userId,String email)
 	{

@@ -5,6 +5,8 @@ import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import entities.CommonFunctions;
+
 import static entities.CommonFunctions.NotEmpty;
 public class ChangeNickName {
 
@@ -27,7 +29,8 @@ public class ChangeNickName {
 	}
 
 	public void setSession(String session) {
-		this.session = session;
+		
+		this.session = CommonFunctions.clean(session);
 	}
 
 	public String getNickname() {

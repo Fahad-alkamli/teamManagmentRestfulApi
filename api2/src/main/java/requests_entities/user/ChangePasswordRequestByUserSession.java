@@ -6,6 +6,8 @@ import javax.validation.constraints.Pattern;
 import static entities.CommonFunctions.NotEmpty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import entities.CommonFunctions;
+
 public class ChangePasswordRequestByUserSession {
 
 	@NotNull
@@ -26,7 +28,7 @@ public class ChangePasswordRequestByUserSession {
 
 
 	public void setSession(String session) {
-		this.session = session;
+		this.session = CommonFunctions.clean(session);
 	}
 
 

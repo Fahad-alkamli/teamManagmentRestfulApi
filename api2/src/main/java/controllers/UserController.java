@@ -174,32 +174,6 @@ public class UserController {
 
 	}
 
-	@RequestMapping(value="/delete_user", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
-	public ResponseEntity<String> deleteUser(@Valid @RequestBody DeleteUserRequest request)
-	{
-		try{
-			//Validate the admin first
-			if(!UsersService.validateAdminSession(request.getAdminSession()))
-			{
-				//System.out.println("Trying to throw an exception");
-				//	throw new UserIsNotAuthorized();
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-			}
-
-			Response response=UsersService.deleteUser(request.getUserId());
-			if(response.getState())
-			{
-				return ResponseEntity.status(HttpStatus.OK).body(null);
-			}else{
-				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
-			}
-		}catch(Exception e)
-		{
-			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
-		}
-
-	}
-	
 	@RequestMapping(value="/change_password_by_user_session", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> changePasswordByUserSession(@Valid @RequestBody ChangePasswordRequestByUserSession request)
 	{
@@ -231,7 +205,32 @@ public class UserController {
 		}
 	}
 	
-	
+	@RequestMapping(value="/delete_user", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
+	public ResponseEntity<String> deleteUser(@Valid @RequestBody DeleteUserRequest request)
+	{
+		try{
+			//Validate the admin first
+			if(!UsersService.validateAdminSession(request.getAdminSession()))
+			{
+				//System.out.println("Trying to throw an exception");
+				//	throw new UserIsNotAuthorized();
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			}
+
+			Response response=UsersService.deleteUser(request.getUserId());
+			if(response.getState())
+			{
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else{
+				return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response.getJson(response));
+			}
+		}catch(Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
+		}
+
+	}
+		
 	@RequestMapping(value="/change_email_by_user_session", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> changeEmailByUserSession(@Valid @RequestBody ChangeEmail request)
 	{
@@ -263,6 +262,7 @@ public class UserController {
 		}
 		
 	}
+	
 	@RequestMapping(value="/change_nickname_by_user_session", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> changeNicknameByUserSession(@Valid @RequestBody ChangeNickName request)
 	{

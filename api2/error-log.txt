@@ -1,1 +1,20 @@
 Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null
+Class Name: db.user.UsersService || MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+Class Name: db.user.UsersService || MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+Class Name: db.user.UsersService || MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+Class Name: db.user.UsersService || MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29, Size: 29
+Class Name: db.poject.ProjectService || MethodName: getAllProjects || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29, Size: 29
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29, Size: 29
+Class Name: db.user.UsersService || MethodName: logout || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29, Size: 29
+Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29, Size: 29
+Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29, Size: 29
+Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
+Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null
+Class Name: db.poject.ProjectService || MethodName: addMemberToProject || ErrorMessage: Duplicate entry '1-2' for key 'PRIMARY'

@@ -18,7 +18,7 @@ import requests_entities.Response;
 public class UsersExtra {
 
 	static Logger log = new Logger(UsersExtra.class.getName());
-	public static DateFormat dateFormat = new SimpleDateFormat("d/M/yyyy h:m");
+	 
 	//http://stackoverflow.com/questions/5392693/java-random-number-with-given-length
 	public static int getRandomNumber() {
 
@@ -57,6 +57,7 @@ public class UsersExtra {
 			Calendar cal2 = Calendar.getInstance();
 			// cal2.setTime(startDate);
 			cal2.add(Calendar.MINUTE, minutes);
+			DateFormat dateFormat = new SimpleDateFormat("d/M/yyyy h:m");
 			
 		//System.out.println("The date tomorrow will be : "+dateFormat.format(cal2.getTime()));
 			return dateFormat.format(cal2.getTime());
@@ -80,7 +81,6 @@ public class UsersExtra {
 					.prepareStatement("select * from failed_login_counter where user_id=?");
 			preparedStatement.setInt(1, userId);
 			ResultSet result=preparedStatement.executeQuery();
-			
 			if(result.next())
 			{
 				int counter=result.getInt("counter");
@@ -92,8 +92,10 @@ public class UsersExtra {
 					Date date1 = null;
 					Date now=null;
 					Calendar cal2 = Calendar.getInstance();
+					DateFormat dateFormat = new SimpleDateFormat("d/M/yyyy h:m");
 					date1 = dateFormat.parse(waitingTime);
 					//System.out.println("WatingTime: "+date1);
+					
 					now=dateFormat.parse(dateFormat.format(cal2.getTime()));
 					//System.out.println("Now: "+now);
 					if(now.after(date1))
@@ -114,6 +116,7 @@ public class UsersExtra {
 		{
 			class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
 			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			e.printStackTrace();
 		}
 		CommonFunctions.closeConnection(preparedStatement);
 		return true;
@@ -366,4 +369,7 @@ public class UsersExtra {
 
 	}
 
+	
+	
+	
 }

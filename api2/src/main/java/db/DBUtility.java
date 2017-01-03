@@ -39,9 +39,7 @@ public class DBUtility  {
 
 				connectctionsList=new ArrayList<Connection>();
 				connectctionsList.add(DriverManager.getConnection(url, user, password));
-
 				setupConnections();
-
 			}
 			//System.out.println("Check this:"+connectctionsList.size());
 			if(connectctionsList.size()<numberOfconnections)
@@ -73,7 +71,7 @@ public class DBUtility  {
 		}catch (Exception e) {
 			class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
 			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-
+			e.printStackTrace();
 		}
 		return null;
 	}

@@ -1,0 +1,11 @@
+MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+MethodName: userExistsCheckByLogin || ErrorMessage: Parameter index out of range (2 > number of parameters, which is 1).
+MethodName: getAllProjects || ErrorMessage: null
+MethodName: getUserIdFromSession || ErrorMessage: null
+MethodName: logout || ErrorMessage: null
+MethodName: userExistsCheckByEmail || ErrorMessage: null
+MethodName: userExistsCheckByEmail || ErrorMessage: null
+MethodName: userExistsCheckByEmail || ErrorMessage: null
+MethodName: addMemberToProject || ErrorMessage: Duplicate entry '1-2' for key 'PRIMARY'

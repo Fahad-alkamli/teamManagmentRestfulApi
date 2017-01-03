@@ -8,6 +8,7 @@ import com.mysql.jdbc.Statement;
 import db.DBUtility;
 import db.poject.ProjectService;
 import db.task.TaskService;
+import db.user.user_extra_functions.PasswordAuthentication;
 import db.user.user_extra_functions.UsersExtra;
 import email_server_setup.SendEmail;
 import entities.CommonFunctions;
@@ -30,10 +31,13 @@ public class UsersService {
 
 			////System.out.println("User name: "+user.getName().toString());
 			preparedStatement.setString(1, user.getName());   
-
 			preparedStatement.setString(2, user.getEmail());
-
-			preparedStatement.setString(3, user.getPassword());
+			PasswordAuthentication something=new PasswordAuthentication();
+			String password=something.hash(user.getPassword().toCharArray());
+			//System.out.println(password);
+			//System.out.println(something.authenticate(user.getPassword().toCharArray(), password));
+			//Added encryption to the password
+			preparedStatement.setString(3,password);
 			preparedStatement.setBoolean(4, user.isAdmin());
 			int count= preparedStatement.executeUpdate();
 			//System.out.println("Check this:"+count);
@@ -103,29 +107,52 @@ public class UsersService {
 		return false;
 	}
 
+	/*
+	This function will be refactored to work with encryption. I need to get the password for that user and then feed it 
+	to the function to validate the password
+	*/
 	public static Response userExistsCheckByLogin(String email,String password)
 	{
 		PreparedStatement preparedStatement =null;
 		try{
-
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from user where user_email=? and user_password=? ");
-			preparedStatement.setString(1, email);
-			preparedStatement.setString(2, password);
-			ResultSet set= preparedStatement.executeQuery();
 			User user=userExistsCheckByEmail(email);
 			if(user==null)
 			{
 				return new Response(false,"user doesn't exists");
 			}
+			//preparedStatement = DBUtility.getConnection().prepareStatement("select * from user where user_email=? and user_password=? ");
+			preparedStatement = DBUtility.getConnection().prepareStatement("select * from user where user_email=?");
+			preparedStatement.setString(1, email);
+			//preparedStatement.setString(2, password);
+			ResultSet set= preparedStatement.executeQuery();
+			
 			boolean loginState= UsersExtra.login_counter_state(user.getId());
 			if(set.next() &&loginState)
 			{
-				//System.out.println("User exists");
-				CommonFunctions.closeConnection(preparedStatement);
-				//Remove the old attempts 
-				UsersExtra.removeFailedTries(user.getId());
-				return new Response(true,"");
+				//validate the password here 
+				String user_password=set.getString("user_password");
+				PasswordAuthentication authenticate=new PasswordAuthentication();
+				boolean successful=authenticate.authenticate(password.toCharArray(), user_password);
+				System.out.println(successful);
+				if(successful)
+				{
+					//System.out.println("User exists");
+					CommonFunctions.closeConnection(preparedStatement);
+					//Remove the old attempts 
+					UsersExtra.removeFailedTries(user.getId());
+					return new Response(true,"");		
+				}else{
+					//In case of a failed login we need to count that try 
+					UsersExtra.increaseErrorCountForLogin(user.getId());
+					//System.out.println("User doesn't exist "+set.getFetchSize());
+					if(!loginState)
+					{
+						//user needs to back off for a short time
+						System.out.println("user needs to back off for a short time");
+						return new Response(false,"Too many attempts, please wait 10 minutes before trying again.");
+					}
+				}
+
 			}else{
 
 				//In case of a failed login we need to count that try 
@@ -151,31 +178,27 @@ public class UsersService {
 
 	public static UserLoginResponse loginAndReturnSession(UserLoginRequest user)
 	{
-
 		String session=UsersExtra.GenerateSession();
 		PreparedStatement preparedStatement=null;
 		try{
-
 			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("update user set session=? where user_email=? and user_password=? ");
+					.prepareStatement("update user set session=? where user_email=?");
 			preparedStatement.setString(1, session);
 			preparedStatement.setString(2, user.getEmail());
-			preparedStatement.setString(3, user.getPassword());
 			int effectedRows= preparedStatement.executeUpdate();
 			if(effectedRows>0)
 			{
-				//System.out.println("Done updating the session");
+				System.out.println("Done updating the session");
 				CommonFunctions.closeConnection(preparedStatement);
 				//Now we get the user nickname and session and admin state
 				preparedStatement = DBUtility.getConnection()
-						.prepareStatement("select user_name,session,admin from user where user_email=? and user_password=? ");
+						.prepareStatement("select user_name,session,admin from user where user_email=?");
 				preparedStatement.setString(1, user.getEmail());
-				preparedStatement.setString(2, user.getPassword());
+				//preparedStatement.setString(2, user.getPassword());
 				ResultSet result=  preparedStatement.executeQuery();
 
 				if(result.next())
 				{
-
 					UserLoginResponse response= new UserLoginResponse(result.getString("session"),result.getBoolean("admin"),result.getString("user_name"));
 					CommonFunctions.closeConnection(preparedStatement);
 					return response;
@@ -406,7 +429,8 @@ public class UsersService {
 			//update the password
 			preparedStatement = DBUtility.getConnection()
 					.prepareStatement("update user set user_password=? where user_email=?");
-			preparedStatement.setString(1, request.getPassword());
+			PasswordAuthentication auth=new PasswordAuthentication();
+			preparedStatement.setString(1,auth.hash(request.getPassword().toCharArray()));
 			preparedStatement.setString(2, response.getMessage());
 			int result=  preparedStatement.executeUpdate();
 			if(result>0)
@@ -534,10 +558,10 @@ public class UsersService {
 	{
 		PreparedStatement preparedStatement =null;		
 		try{
-
 			preparedStatement = DBUtility.getConnection()
 					.prepareStatement("update user set user_password=? where user_id=?");
-			preparedStatement.setString(1, password);
+			PasswordAuthentication auth=new PasswordAuthentication();
+			preparedStatement.setString(1,auth.hash(password.toCharArray()));
 			preparedStatement.setInt(2, Integer.parseInt(userId));
 			if(preparedStatement.executeUpdate()>0)
 			{
@@ -565,14 +589,19 @@ public class UsersService {
 		PreparedStatement preparedStatement= null;
 		try{	
 			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from user where user_id=? and user_password=?");
+					.prepareStatement("select * from user where user_id=?");
 			preparedStatement.setInt(1, userId);
-			preparedStatement.setString(2, password);
 			ResultSet set= preparedStatement.executeQuery();
 			if(set.next())
 			{
-				CommonFunctions.closeConnection(preparedStatement);
-			return new Response(true,"");
+				String user_password=set.getString("user_password");
+				PasswordAuthentication auth=new PasswordAuthentication();
+				if(auth.authenticate(password.toCharArray(), user_password))
+				{
+					CommonFunctions.closeConnection(preparedStatement);
+					return new Response(true,"");					
+				}
+
 			}
 		}catch(Exception e)
 		{

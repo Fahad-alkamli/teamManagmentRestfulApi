@@ -119,4 +119,4 @@ ALTER TABLE `tasks`
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 
-INSERT INTO `user` (`user_id`, `admin`, `user_name`, `user_email`, `user_password`, `session`) VALUES (NULL, '1', 'admin', 'd0l1@hotmail.com', 'admin123456', NULL);
+INSERT INTO `user` (`user_id`, `admin`, `user_name`, `user_email`, `user_password`, `session`) VALUES (NULL, '1', 'admin', 'd0l1@hotmail.com', '$31$16$b4CeJ9nZZHxuSK8clp4A5_4gIq2dmKtUmoLCAkirEiE', NULL);

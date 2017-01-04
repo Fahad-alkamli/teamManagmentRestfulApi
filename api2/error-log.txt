@@ -18,3 +18,4 @@ Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 29
 Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
 Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null
 Class Name: db.poject.ProjectService || MethodName: addMemberToProject || ErrorMessage: Duplicate entry '1-2' for key 'PRIMARY'
+Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null

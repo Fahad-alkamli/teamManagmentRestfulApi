@@ -87,6 +87,11 @@ public class UsersExtra {
 				if(counter>=5)
 				{
 					String waitingTime=result.getString("time_to_wait");
+					if(waitingTime==null)
+					{
+						//since i will be recording the time only after the 6th try
+						return true;
+					}
 					CommonFunctions.closeConnection(preparedStatement);
 					//Now we need to check the waiting time and make sure to wait for that amount before proceeding 
 					Date date1 = null;

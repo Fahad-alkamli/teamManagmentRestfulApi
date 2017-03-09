@@ -87,7 +87,7 @@ public class UsersService {
 			ResultSet set= preparedStatement.executeQuery();
 			if(set.next())
 			{
-				//System.out.println("This user is admin");
+				System.out.println("This user is admin");
 				CommonFunctions.closeConnection(preparedStatement);
 				return true;
 			}else{

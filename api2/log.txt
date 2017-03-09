@@ -9,3 +9,10 @@ MethodName: userExistsCheckByEmail || ErrorMessage: null
 MethodName: userExistsCheckByEmail || ErrorMessage: null
 MethodName: userExistsCheckByEmail || ErrorMessage: null
 MethodName: addMemberToProject || ErrorMessage: Duplicate entry '1-2' for key 'PRIMARY'
+MethodName: getUserIdFromSession || ErrorMessage: null
+MethodName: getUserIdFromSession || ErrorMessage: null
+MethodName: getUserIdFromSession || ErrorMessage: null
+MethodName: logout || ErrorMessage: null
+MethodName: userExistsCheckByEmail || ErrorMessage: null
+MethodName: userExistsCheckByEmail || ErrorMessage: null
+MethodName: userExistsCheckByEmail || ErrorMessage: null

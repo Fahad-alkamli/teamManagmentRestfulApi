@@ -19,3 +19,19 @@ Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorM
 Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null
 Class Name: db.poject.ProjectService || MethodName: addMemberToProject || ErrorMessage: Duplicate entry '1-2' for key 'PRIMARY'
 Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Could not create connection to database server. Attempted reconnect 3 times. Giving up.
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.user.UsersService || MethodName: getUserIdFromSession || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.user.UsersService || MethodName: logout || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Could not create connection to database server. Attempted reconnect 3 times. Giving up.
+Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Could not create connection to database server. Attempted reconnect 3 times. Giving up.
+Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
+Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0, Size: 0
+Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
+Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: Table 'teammanagment.failed_login_counter' doesn't exist
+Class Name: db.user.user_extra_functions.UsersExtra || MethodName: increaseErrorCountForLogin || ErrorMessage: Table 'teammanagment.failed_login_counter' doesn't exist

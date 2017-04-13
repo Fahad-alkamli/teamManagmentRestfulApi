@@ -2,7 +2,8 @@ package db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.ArrayList;
+import java.util.Vector;
+
 import logger.Logger;
 
 
@@ -12,7 +13,7 @@ public class DBUtility  {
 
 	// private static Connection connection = null;
 	final static Logger log=new Logger(DBUtility.class.getName());
-	private static ArrayList<Connection> connectctionsList;
+	private static Vector<Connection> connectctionsList;
 	private static String driver ="com.mysql.jdbc.Driver";
 	private static String user = "root";
 	static final int numberOfconnections=29;
@@ -25,7 +26,6 @@ public class DBUtility  {
 	public static synchronized Connection getConnection() 
 	{
 		try {
-
 			//reset the pointer
 			if(pointer>numberOfconnections)
 			{
@@ -37,7 +37,7 @@ public class DBUtility  {
 				//create the first connection and create a thread that does the rest don't forget to increase the counter
 				Class.forName(driver);
 
-				connectctionsList=new ArrayList<Connection>();
+				connectctionsList=new Vector<Connection>();
 				connectctionsList.add(DriverManager.getConnection(url, user, password));
 				setupConnections();
 			}
@@ -56,6 +56,7 @@ public class DBUtility  {
 			}
 			else if(connectctionsList.get(pointer).isClosed() || connectctionsList.get(pointer).isValid(2)==false)
 			{
+				//Why clear and remove all the connection when there is only one broken connection !  check this thing out
 				pointer=0;
 				System.out.println("Connection is broken");
 				connectctionsList.clear();

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import db.task.TaskService;
 import db.task.task_extra_functions.TaskExtra;
 import db.user.UsersService;
+import db.user.user_extra_functions.UsersExtra;
 import entities.Task;
 import requests_entities.Response;
 import requests_entities.task.*;
@@ -41,13 +42,13 @@ public class TaskController {
 	public ResponseEntity<String> getAllTasks(@Valid @RequestBody GetAllTasksRequest request)
 	{
 		//validate that the request came from a user account
-		if(UsersService.userExistsCheckById(UsersService.getUserIdFromSession(request.getSession()))==null)
+		if(UsersExtra.userExistsCheckById(UsersExtra.getUserIdFromSession(request.getSession()))==null)
 		{
 			//System.out.println("Trying to throw an exception UNAUTHORIZED");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
 
-		Response response=TaskService.getAllTasks(request.getSession(),UsersService.getUserIdFromSession(request.getSession()));
+		Response response=TaskService.getAllTasks(request.getSession(),UsersExtra.getUserIdFromSession(request.getSession()));
 		if(response.getState())
 		{
 			////System.out.println(response.getMessage());
@@ -64,7 +65,7 @@ public class TaskController {
 	public ResponseEntity<String> updateTask(@Valid @RequestBody UpdateTaskRequest request)
 	{
 		//validate that the request came from a user account
-		if(UsersService.userExistsCheckById(UsersService.getUserIdFromSession(request.getSession()))==null)
+		if(UsersExtra.userExistsCheckById(UsersExtra.getUserIdFromSession(request.getSession()))==null)
 		{
 			//System.out.println("Trying to throw an exception UNAUTHORIZED");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -166,7 +167,7 @@ public class TaskController {
 	@RequestMapping(value="/submit_task_complete", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> submitTaskComplete(@Valid @RequestBody SubmitTaskCompleteRequest request)
 	{
-		int userId=UsersService.getUserIdFromSession(request.getSession());
+		int userId=UsersExtra.getUserIdFromSession(request.getSession());
 		if(userId==-1 || userId==0)
 		{
 			//this session doesn't exists 
@@ -199,7 +200,7 @@ public class TaskController {
 	@RequestMapping(value="/submit_task_not_complete", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> submitTaskNotComplete(@Valid @RequestBody SubmitTaskNotCompleteRequest request)
 	{
-		int userId=UsersService.getUserIdFromSession(request.getSession());
+		int userId=UsersExtra.getUserIdFromSession(request.getSession());
 		if(userId==-1 || userId==0)
 		{
 			//this session doesn't exists 
@@ -231,7 +232,7 @@ public class TaskController {
 	@RequestMapping(value="/add_hours_to_task", method = RequestMethod.POST, consumes = "application/json",produces="application/json")
 	public ResponseEntity<String> addHoursToTask(@Valid @RequestBody AddHoursToTaskRequest request)
 	{
-		int userId=UsersService.getUserIdFromSession(request.getSession());
+		int userId=UsersExtra.getUserIdFromSession(request.getSession());
 		if(userId==-1 || userId==0)
 		{
 			//this session doesn't exists 
@@ -261,10 +262,6 @@ public class TaskController {
 		}
 
 	}
-
-
-
-
 
 
 }

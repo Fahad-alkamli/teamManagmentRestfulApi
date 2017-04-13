@@ -35,3 +35,4 @@ Class Name: db.DBUtility || MethodName: getConnection || ErrorMessage: Index: 0,
 Class Name: db.user.UsersService || MethodName: userExistsCheckByEmail || ErrorMessage: null
 Class Name: db.user.user_extra_functions.UsersExtra || MethodName: login_counter_state || ErrorMessage: Table 'teammanagment.failed_login_counter' doesn't exist
 Class Name: db.user.user_extra_functions.UsersExtra || MethodName: increaseErrorCountForLogin || ErrorMessage: Table 'teammanagment.failed_login_counter' doesn't exist
+Class Name: email_server_setup.SendEmail || MethodName: sendMessage || ErrorMessage: Third party error

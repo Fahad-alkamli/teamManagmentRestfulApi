@@ -1,1 +1,8 @@
+/com/
+/controllers/
 /db/
+/email_server_setup/
+/entities/
+/logger/
+/main_app/
+/requests_entities/

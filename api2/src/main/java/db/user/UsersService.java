@@ -19,7 +19,7 @@ import requests_entities.user.*;
 
 public class UsersService {
 
-	static Logger log = new Logger(UsersService.class.getName());
+	 static Logger log = new Logger(UsersService.class.getName());
 
 	public static Response createUser(CreateUserRequest user)
 	{
@@ -107,15 +107,11 @@ public class UsersService {
 		return false;
 	}
 
-	/*
-	This function will be refactored to work with encryption. I need to get the password for that user and then feed it 
-	to the function to validate the password
-	*/
 	public static Response userExistsCheckByLogin(String email,String password)
 	{
 		PreparedStatement preparedStatement =null;
 		try{
-			User user=userExistsCheckByEmail(email);
+			User user=UsersExtra.userExistsCheckByEmail(email);
 			if(user==null)
 			{
 				return new Response(false,"user doesn't exists");
@@ -248,82 +244,6 @@ public class UsersService {
 
 	}
 
-	public static User userExistsCheckById(int userId)
-	{
-		PreparedStatement preparedStatement= null;
-		try{
-			if(userId == -1 )
-			{
-				return null;
-			}
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from user where user_id=? ");
-			preparedStatement.setInt(1, userId);
-			ResultSet set= preparedStatement.executeQuery();
-			if(set.next())
-			{
-				//System.out.println("User exists");
-
-				User user=new User();
-				user.setId(set.getInt("user_id"));
-				user.setAdmin(set.getBoolean("admin"));
-				user.setEmail(set.getString("user_email"));
-				user.setName(set.getString("user_name"));
-				CommonFunctions.closeConnection(preparedStatement);
-				return user;
-			}else{
-
-				//System.out.println("User doesn't exist "+set.getFetchSize());
-			}
-
-		}catch(Exception e)
-		{
-
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
-		}
-		CommonFunctions.closeConnection(preparedStatement);
-		return null;
-	}
-
-	public static int getUserIdFromSession(String session)
-	{
-		PreparedStatement preparedStatement =null;
-		try{
-
-			if(session == null || CommonFunctions.clean(session).length()<1)
-			{
-				return -1;
-			}
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select user_id from user where session=? ");
-			preparedStatement.setString(1, session);
-			ResultSet set= preparedStatement.executeQuery();
-			if(set.next())
-			{
-				//System.out.println("User exists");
-				int userId=( set.getInt("user_id"));
-				//System.out.println("Check this is the user id: "+userId);
-				if(userId != 0 )
-				{
-					CommonFunctions.closeConnection(preparedStatement);
-					return (userId);
-				}
-			}else{
-
-				//System.out.println("User doesn't exist "+set.getFetchSize());
-			}
-
-
-		}catch(Exception e)
-		{
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
-		}
-		CommonFunctions.closeConnection(preparedStatement);
-		return -1;
-	}
-
 	public static ArrayList<User> getAllUsers(String session,int userId)
 	{
 		//If the user is an admin then i will fetch all the users if not then Get me users that belong to a project i am enrolled in 
@@ -375,48 +295,13 @@ public class UsersService {
 		return null;
 	}
 
-	public static User userExistsCheckByEmail(String userEmail)
-	{
-		PreparedStatement preparedStatement =null;
-		try{
-
-			preparedStatement = DBUtility.getConnection()
-					.prepareStatement("select * from user where user_email=?");
-			preparedStatement.setString(1,userEmail.trim());
-			ResultSet set= preparedStatement.executeQuery();
-			if(set.next())
-			{
-				//System.out.println("User exists");
-
-				User user=new User();
-				user.setId(set.getInt("user_id"));
-				user.setAdmin(set.getBoolean("admin"));
-				user.setEmail(set.getString("user_email"));
-				user.setName(set.getString("user_name"));
-				CommonFunctions.closeConnection(preparedStatement);
-				return user;
-			}else{
-
-				//System.out.println("User doesn't exist "+set.getFetchSize());
-			}
-
-		}catch(Exception e)
-		{
-			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
-			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
-			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
-		}
-		CommonFunctions.closeConnection(preparedStatement);
-		return null;
-	}
-
 	public static Response changePasswordWithToken(ChangePasswordRequestByToken request)
 	{
 
 		PreparedStatement preparedStatement =null;
 		try{
 			//validate the token first and return the email if the token is valid
-			User user=userExistsCheckByEmail(request.getEmail());
+			User user=UsersExtra.userExistsCheckByEmail(request.getEmail());
 			if(user==null )
 			{
 				return new Response(false,"Not a valid email");

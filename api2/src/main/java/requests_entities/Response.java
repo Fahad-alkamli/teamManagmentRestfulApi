@@ -6,6 +6,9 @@ public class Response {
 
 	private boolean state=false;
 	private String message="";
+
+    public Response() {
+    }
 	public Response(boolean state, String message) {
 		super();
 		this.state = state;
@@ -23,9 +26,6 @@ public class Response {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
-	
-
 	public String getJson(Response request)
     {
         try{
@@ -40,9 +40,6 @@ public class Response {
         }
         return null;
     }
-	
 
-    public Response() {
-    }
 	
 }

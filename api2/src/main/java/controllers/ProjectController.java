@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import db.poject.ProjectService;
 import db.user.UsersService;
+import db.user.user_extra_functions.UsersExtra;
 import entities.CommonFunctions;
 import entities.Project;
 import requests_entities.Response;
@@ -107,7 +108,7 @@ public class ProjectController {
 
 		//We need 
 		//We do not know if the user exists we only know that the admin is a valid admin 
-		if(UsersService.userExistsCheckById(Integer.parseInt(request.getMemberId()))==null)
+		if(UsersExtra.userExistsCheckById(Integer.parseInt(request.getMemberId()))==null)
 		{
 			//The user id doesn't exists
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("The user id doesn't exists");
@@ -148,7 +149,7 @@ public class ProjectController {
 	{
 		try{
 			//Before we call any function we need to validate the session that it actually belongs to a user 
-			if(UsersService.getUserIdFromSession(request.getSession())==-1)
+			if(UsersExtra.getUserIdFromSession(request.getSession())==-1)
 			{
 				//this session doesn't exists 
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

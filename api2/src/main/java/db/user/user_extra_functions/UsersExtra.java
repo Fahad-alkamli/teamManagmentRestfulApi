@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.Random;
 
 import db.DBUtility;
-import db.user.UsersService;
 import entities.CommonFunctions;
 import entities.User;
 import logger.Logger;
@@ -252,7 +251,7 @@ public class UsersExtra {
 			{
 				int user_id=result.getInt("user_id");
 				CommonFunctions.closeConnection(preparedStatement);
-				User user=UsersService.userExistsCheckById(user_id);
+				User user=UsersExtra.userExistsCheckById(user_id);
 				if(user ==null)
 				{
 					return new Response(false,"");
@@ -357,7 +356,7 @@ public class UsersExtra {
 					sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
 				}
 				//We make sure we always get a unique session 
-				if(UsersService.getUserIdFromSession(sb.toString())==-1 || UsersService.getUserIdFromSession(sb.toString())==0)
+				if(UsersExtra.getUserIdFromSession(sb.toString())==-1 || UsersExtra.getUserIdFromSession(sb.toString())==0)
 				{
 					return sb.toString();
 				}else{
@@ -374,7 +373,115 @@ public class UsersExtra {
 
 	}
 
+	public static int getUserIdFromSession(String session)
+	{
+		PreparedStatement preparedStatement =null;
+		try{
+	
+			if(session == null || CommonFunctions.clean(session).length()<1)
+			{
+				return -1;
+			}
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select user_id from user where session=? ");
+			preparedStatement.setString(1, session);
+			ResultSet set= preparedStatement.executeQuery();
+			if(set.next())
+			{
+				//System.out.println("User exists");
+				int userId=( set.getInt("user_id"));
+				//System.out.println("Check this is the user id: "+userId);
+				if(userId != 0 )
+				{
+					CommonFunctions.closeConnection(preparedStatement);
+					return (userId);
+				}
+			}else{
+	
+				//System.out.println("User doesn't exist "+set.getFetchSize());
+			}
 	
 	
+		}catch(Exception e)
+		{
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+		}
+		CommonFunctions.closeConnection(preparedStatement);
+		return -1;
+	}
+
+	public static User userExistsCheckById(int userId)
+	{
+		PreparedStatement preparedStatement= null;
+		try{
+			if(userId == -1 )
+			{
+				return null;
+			}
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select * from user where user_id=? ");
+			preparedStatement.setInt(1, userId);
+			ResultSet set= preparedStatement.executeQuery();
+			if(set.next())
+			{
+				//System.out.println("User exists");
 	
+				User user=new User();
+				user.setId(set.getInt("user_id"));
+				user.setAdmin(set.getBoolean("admin"));
+				user.setEmail(set.getString("user_email"));
+				user.setName(set.getString("user_name"));
+				CommonFunctions.closeConnection(preparedStatement);
+				return user;
+			}else{
+	
+				//System.out.println("User doesn't exist "+set.getFetchSize());
+			}
+	
+		}catch(Exception e)
+		{
+	
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+		}
+		CommonFunctions.closeConnection(preparedStatement);
+		return null;
+	}
+
+	public static User userExistsCheckByEmail(String userEmail)
+	{
+		PreparedStatement preparedStatement =null;
+		try{
+	
+			preparedStatement = DBUtility.getConnection()
+					.prepareStatement("select * from user where user_email=?");
+			preparedStatement.setString(1,userEmail.trim());
+			ResultSet set= preparedStatement.executeQuery();
+			if(set.next())
+			{
+				//System.out.println("User exists");
+	
+				User user=new User();
+				user.setId(set.getInt("user_id"));
+				user.setAdmin(set.getBoolean("admin"));
+				user.setEmail(set.getString("user_email"));
+				user.setName(set.getString("user_name"));
+				CommonFunctions.closeConnection(preparedStatement);
+				return user;
+			}else{
+	
+				//System.out.println("User doesn't exist "+set.getFetchSize());
+			}
+	
+		}catch(Exception e)
+		{
+			class Local {}; CommonFunctions.ErrorLogger(("MethodName: "+Local.class.getEnclosingMethod().getName()+" || ErrorMessage: "+e.getMessage())); 
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
+			//System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+		}
+		CommonFunctions.closeConnection(preparedStatement);
+		return null;
+	}
+
 }

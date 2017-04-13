@@ -6,6 +6,7 @@ import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.Mailer;
 import org.simplejavamail.mailer.config.TransportStrategy;
 
+import logger.Logger;
 import requests_entities.Response;
 
 public class SendEmail {
@@ -14,6 +15,9 @@ public class SendEmail {
 	private String userEmail,token;
 	private static final String serverEmail="";
 	private static final String serverPassword="";
+	static Logger log = new Logger(SendEmail.class.getName());
+	
+	
 	public SendEmail(String userEmail,String token)
 	{
 		this.userEmail=userEmail;
@@ -35,6 +39,8 @@ public class SendEmail {
 			return new Response(true,"");
 		}catch(Exception e)
 		{
+			class Local {}; //System.out.println("Sub: "+Local.class.getEnclosingMethod().getName()+" Error code: "+e.getMessage());
+			log.error(e.getMessage(),Local.class.getEnclosingMethod().getName());
 			return new Response(false,"");
 
 		}

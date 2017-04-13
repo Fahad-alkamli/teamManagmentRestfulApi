@@ -10,6 +10,7 @@ import com.mysql.jdbc.Statement;
 import db.DBUtility;
 import db.poject.ProjectService;
 import db.user.UsersService;
+import db.user.user_extra_functions.UsersExtra;
 import entities.CommonFunctions;
 import entities.Task;
 import entities.User;
@@ -145,7 +146,7 @@ public class TaskService {
 		PreparedStatement preparedStatement=null;
 
 		try{
-			if(UsersService.userExistsCheckById((request.getUserId()))==null)
+			if(UsersExtra.userExistsCheckById((request.getUserId()))==null)
 			{
 				return new Response(false,"User doesn't exists");
 			}
@@ -206,7 +207,7 @@ public class TaskService {
 			if(UsersService.validateAdminSession(task.getSession()))
 			{
 				admin=true;
-			}else if(TaskExtra.doesUserBelongToTask((UsersService.getUserIdFromSession(task.getSession())),(task.getTask_id()))==false)
+			}else if(TaskExtra.doesUserBelongToTask((UsersExtra.getUserIdFromSession(task.getSession())),(task.getTask_id()))==false)
 			{
 				return new Response(false,"User doesn't belong to this task");
 			}

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import db.user.UsersService;
+import db.user.user_extra_functions.UsersExtra;
 import entities.CommonFunctions;
 import entities.User;
 import requests_entities.Response;
@@ -83,7 +84,7 @@ public class UserController {
 	{
 		try{	
 			//Before we call any function we need to validate the session that it actually belongs to a user 
-			int userId=UsersService.getUserIdFromSession(request.getSession());
+			int userId=UsersExtra.getUserIdFromSession(request.getSession());
 			if(userId==-1 || userId==0)
 			{
 				//this session doesn't exists 
@@ -114,7 +115,7 @@ public class UserController {
 	public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request)
 	{
 		//Check if the email exists
-		User user=UsersService.userExistsCheckByEmail(request.getEmail());
+		User user=UsersExtra.userExistsCheckByEmail(request.getEmail());
 		if(user ==null)
 		{
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -178,7 +179,7 @@ public class UserController {
 	public ResponseEntity<String> changePasswordByUserSession(@Valid @RequestBody ChangePasswordRequestByUserSession request)
 	{
 		try{
-			int userId=UsersService.getUserIdFromSession(request.getSession());
+			int userId=UsersExtra.getUserIdFromSession(request.getSession());
 			if(userId==0 || userId==-1)
 			{
 				//System.out.println("Trying to throw an exception");
@@ -235,7 +236,7 @@ public class UserController {
 	public ResponseEntity<String> changeEmailByUserSession(@Valid @RequestBody ChangeEmail request)
 	{
 		try{
-			int userId=UsersService.getUserIdFromSession(request.getSession());
+			int userId=UsersExtra.getUserIdFromSession(request.getSession());
 			if(userId==0 || userId==-1)
 			{
 				//System.out.println("Trying to throw an exception");
@@ -267,7 +268,7 @@ public class UserController {
 	public ResponseEntity<String> changeNicknameByUserSession(@Valid @RequestBody ChangeNickName request)
 	{
 		try{
-			int userId=UsersService.getUserIdFromSession(request.getSession());
+			int userId=UsersExtra.getUserIdFromSession(request.getSession());
 			if(userId==0 || userId==-1)
 			{
 				//System.out.println("Trying to throw an exception");

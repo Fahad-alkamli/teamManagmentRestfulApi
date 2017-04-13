@@ -10,6 +10,7 @@ import com.mysql.jdbc.Statement;
 import db.DBUtility;
 import db.task.TaskService;
 import db.user.UsersService;
+import db.user.user_extra_functions.UsersExtra;
 import entities.CommonFunctions;
 import entities.Project;
 import entities.User;
@@ -231,7 +232,7 @@ public class ProjectService {
 						.prepareStatement("select * from project");
 			}else{
 				//First we get the user id that this session belongs too
-				int userId=UsersService.getUserIdFromSession(CommonFunctions.clean(request.getSession()));
+				int userId=UsersExtra.getUserIdFromSession(CommonFunctions.clean(request.getSession()));
 				if(userId==-1)
 				{
 					//We couldn't find the user id 
@@ -416,7 +417,7 @@ public class ProjectService {
 			ResultSet result=preparedStatement.executeQuery();
 			if(result.next())
 			{
-				User user=UsersService.userExistsCheckById(result.getInt("user_id"));
+				User user=UsersExtra.userExistsCheckById(result.getInt("user_id"));
 				if(user != null)
 				{
 					return user;
